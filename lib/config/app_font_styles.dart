@@ -8,4 +8,18 @@ class AppStyles {
         fontSize: textSize,
         color: AppColors.black);
   }
+
+  static TextStyle textStyleBlackBold(double textSize) {
+    return TextStyle(
+      fontSize: textSize,
+      color: AppColors.black,
+    );
+  }
+
+  static TextStyle textStyleWhite(double textSize) {
+    return TextStyle(
+      fontSize: textSize,
+      color: AppColors.white,
+    );
+  }
 }

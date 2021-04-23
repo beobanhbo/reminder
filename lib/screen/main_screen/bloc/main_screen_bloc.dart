@@ -14,6 +14,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     // TODO: implement mapEventToState
     if (event is FetchDataEvent) {
       yield* _mapEventFetchData(event);
+    } else if (event is AddNewWorkEvent) {
+      yield* _mapEventAddWork(event);
     }
   }
 
@@ -26,5 +28,16 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
           Hive.box<WorkBlockHive>('workBlocHive').getAt(0);
       yield FetchDataSuccess(workBlockHive: workBlockHive);
     } catch (e) {}
+  }
+
+  Stream<MainScreenState> _mapEventAddWork(AddNewWorkEvent event) async* {
+    final workBox = Hive.box<WorkBlockHive>('workBlocHive');
+    if (workBox.isNotEmpty) {
+      WorkBlockHive workBlockHive = workBox.getAt(0);
+      workBlockHive.addWork(event.work);
+      workBlockHive.save();
+
+      yield FetchDataSuccess(workBlockHive: workBlockHive);
+    }
   }
 }

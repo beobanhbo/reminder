@@ -7,6 +7,7 @@ import 'package:reminder/config/app_assets.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
 import 'package:reminder/model/work.dart';
+import 'package:reminder/screen/edit_work_screen/edit_work_screen.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_event.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_state.dart';
 
@@ -31,7 +32,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          _onTapAdd();
+        },
+      ),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(8),
@@ -97,19 +103,18 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildListWork() {
     return BlocConsumer(
         bloc: _mainScreenBloc,
+        buildWhen: (context, state) => state is FetchDataSuccess ? true : false,
         builder: (context, state) {
-          return ListView.builder(
-            itemBuilder: (context, index) => _buildItemWork(_listWork[index]),
-            itemCount: _listWork.length,
-          );
+          return _listWork.isNotEmpty
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) =>
+                      _buildItemWork(_listWork[index]),
+                  itemCount: _listWork.length,
+                )
+              : _buildEmpTyItem();
         },
         listener: _handleFetchData);
-    return _buildEmpTyItem();
-    return SingleChildScrollView(
-      child: Container(
-        child: _buildEmpTyItem(),
-      ),
-    );
   }
 
   Widget _buildEmpTyItem() {
@@ -117,7 +122,9 @@ class _MainScreenState extends State<MainScreen> {
       child: Align(
         alignment: Alignment.center,
         child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              _onTapAdd();
+            },
             child: Container(
               child: Container(
                 height: 250,
@@ -149,18 +156,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildItemWork(Work work) {
-    return Container(
-      child: Row(
-        children: [
-          Icon(
-            Icons.check_circle_outline,
-            color: AppColors.green,
-          ),
-          Text(
-            work.title,
-            style: AppStyles.textStyleBlackNormal(16),
-          )
-        ],
+    return Card(
+      child: Container(
+        height: 40,
+        child: Row(
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              color: AppColors.green,
+            ),
+            Text(
+              work.title,
+              style: AppStyles.textStyleBlackNormal(16),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -169,5 +179,14 @@ class _MainScreenState extends State<MainScreen> {
     if (state is FetchDataSuccess) {
       _listWork = AppUtils.getListWork(state.workBlockHive);
     }
+  }
+
+  void _onTapAdd() {
+    showDialog(
+        context: context,
+        builder: (context) => BlocProvider.value(
+              value: _mainScreenBloc,
+              child: EditWorkScreen(_mainScreenBloc),
+            ));
   }
 }

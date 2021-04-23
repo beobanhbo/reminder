@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:reminder/model/work.dart';
+part 'work_hive.g.dart';
 
 @HiveType(typeId: 0)
 class WorkHive extends HiveObject {
@@ -13,6 +14,8 @@ class WorkHive extends HiveObject {
   int stage;
   @HiveField(4)
   WorkTypeHive workType;
+  @HiveField(5)
+  Map<String, WorkHive> workChildMap;
 
   WorkHive({
     this.id,
@@ -20,6 +23,7 @@ class WorkHive extends HiveObject {
     this.createAt,
     this.stage,
     this.workType,
+    this.workChildMap,
   });
 
   Work toOrigin() {
@@ -28,7 +32,11 @@ class WorkHive extends HiveObject {
       title: title ?? "",
       createAt: createAt ?? "",
       stage: stage ?? 0,
-      workType: workType ?? WorkType.DAILY,
+      workChildMap: workChildMap == null
+          ? {}
+          : Map.fromEntries(workChildMap.entries.map(
+              (entries) => MapEntry(entries.key, entries.value.toOrigin()))),
+      workType: workType ?? WorkTypeHive.DAILY,
     );
   }
 }
@@ -42,7 +50,7 @@ enum WorkTypeHive {
 }
 
 @HiveType(typeId: 2)
-class WorkBlockHive {
+class WorkBlockHive extends HiveObject {
   @HiveField(0)
   Map<String, WorkHive> workBlockHiveMap;
 
@@ -57,5 +65,10 @@ class WorkBlockHive {
               ),
             ),
     );
+  }
+
+  void addWork(Work work) {
+    workBlockHiveMap ??= {};
+    workBlockHiveMap.putIfAbsent(work.id, () => work.toHive());
   }
 }

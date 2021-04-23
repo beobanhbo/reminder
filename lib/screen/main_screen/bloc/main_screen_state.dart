@@ -9,3 +9,5 @@ class FetchDataSuccess extends MainScreenState {
 }
 
 class MainScreenInit extends MainScreenState {}
+
+class UpdateDataState extends MainScreenState {}

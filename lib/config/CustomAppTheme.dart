@@ -5,6 +5,7 @@ import 'AppColors.dart';
 class CustomAppTheme {
   static ThemeData themeData = ThemeData(
       brightness: Brightness.light,
+      backgroundColor: AppColors.white,
       primaryColor: AppColors.white,
       appBarTheme: AppBarTheme(color: AppColors.blue),
       textTheme: TextTheme(

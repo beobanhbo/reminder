@@ -37,9 +37,14 @@ class AppUtils {
       return await openBox(i: ++i);
     }
   }
-  static List<Work> getListWork(WorkBlockHive workBlockHive){
-      List<Work> list=[];
-      workBlockHive.workBlockHiveMap.entries.map((e) => list.add(e.value.toOrigin()));
-      return list;
+
+  static List<Work> getListWork(WorkBlockHive workBlockHive) {
+    List<Work> list = [];
+    if (workBlockHive.workBlockHiveMap != null)
+      workBlockHive.workBlockHiveMap.values.forEach((element) {
+        list.add(element.toOrigin());
+      });
+
+    return list;
   }
 }
