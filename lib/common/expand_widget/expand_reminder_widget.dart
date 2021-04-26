@@ -19,15 +19,17 @@ class ReminderWidget extends StatefulWidget {
 class _ReminderWidgetState extends State<ReminderWidget> {
   Work _work;
   Duration duration;
+  bool isEnableNotification;
   List<DayOfWeek> _listDay = [];
-  String selectedDate = '';
+  List<String> selectedDate = [];
   @override
   void initState() {
     _work = widget.work;
+    isEnableNotification = _work?.enableReminder ?? false;
     _listDay = _work?.week != null
         ? _work.week.listDay
         : AppManager.shared.week.listDay;
-    duration = widget.work?.remindAtDate ?? Duration(hours: 1);
+    duration = _work?.remindAtDate ?? Duration(hours: 1);
     super.initState();
   }
 
@@ -51,9 +53,10 @@ class _ReminderWidgetState extends State<ReminderWidget> {
             onTap: () {
               _onTimePicker();
             },
-            child: widget.work?.remindAtDate != null
-                ? Text('${AppStrings.RemindAt} ${widget.work?.remindAtDate}',
-                    style: _work.enableReminder
+            child: duration != null
+                ? Text(
+                    '${AppStrings.RemindAt} ${duration.toString().replaceFirst(":00.000000", "")}',
+                    style: isEnableNotification
                         ? AppStyles.textStyleBlue(16)
                         : AppStyles.textStyleBlackNormal(16))
                 : Text(
@@ -68,12 +71,14 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _work.enableReminder = !_work.enableReminder;
+          isEnableNotification = !isEnableNotification;
+          if (_work != null) _work.enableReminder = isEnableNotification;
+//          _work.enableReminder = !_work?.enableReminder ?? false;
         });
       },
       child: Icon(
         Icons.notifications,
-        color: _work.enableReminder ? AppColors.blue : AppColors.grey73,
+        color: isEnableNotification ? AppColors.blue : AppColors.grey73,
       ),
     );
   }
@@ -106,9 +111,8 @@ class _ReminderWidgetState extends State<ReminderWidget> {
       onTap: () {
         setState(() {
           dayOfWeek.isSelected = !dayOfWeek.isSelected;
-          if (dayOfWeek.isSelected)
-            selectedDate =
-                AppUtils.getChoosedDayName(dayOfWeek.dayName, selectedDate);
+
+          selectedDate = AppUtils.getChoosedDayName(_listDay);
         });
       },
       child: Container(
@@ -138,7 +142,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     if (unselectedDate == null)
       return Text(AppStrings.Everyday);
     else {
-      return Text(selectedDate);
+      return Row(children: selectedDate.map((e) => Text(e)).toList());
     }
   }
 

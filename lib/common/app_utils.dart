@@ -48,9 +48,16 @@ class AppUtils {
     return list;
   }
 
-  static String getChoosedDayName(String dayName, String stringName) {
-    String name = stringName;
-    if (name.contains(dayName)) name.replaceFirst(dayName, '');
-    return name;
+  static List<String> getChoosedDayName(List<DayOfWeek> listDay) {
+    List<String> lsString = [];
+
+    listDay.forEach((element) {
+      if (element.isSelected) {
+        lsString.add(element.dayName);
+      } else
+        lsString.remove(element.dayName);
+    });
+
+    return lsString;
   }
 }
