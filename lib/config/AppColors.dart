@@ -7,7 +7,6 @@ class AppColors {
   static Color greyFF77 = Color(0xFF777777);
   static Color greyFF2E = Color(0xFF2E2E2E);
   static Color whiteWith10Opacity = Colors.white.withOpacity(0.1);
-  static Color blueFF2 = Color(0xFF262B2F);
   static Color green2E3 = Color(0xFF2E352A);
   static Color orangeFF3 = Color(0xFF352E24);
   static Color greyFF2 = Color(0xFF272727);
@@ -30,7 +29,6 @@ class AppColors {
   static Color black06 = Color.fromRGBO(0, 0, 0, 0.6);
   static Color deepGrey = Color(0xFFF3F3F3);
   static Color blue100 = Colors.blue[100];
-  static Color blue50 = Color(0xF1F5FA);
   static Color grey = Color(0xFFF8F8F8);
   static Color deepBlue = Color(0xFF252C47);
   static Color lightBlue = Color(0xFFF1F5FA);
@@ -82,7 +80,6 @@ class AppColors {
   static Color redF8 = Color(0xFFFF807F);
   static Color gray09 = Color(0xFF666666);
   static Color veryLightError = Color(0xFFFFE7E7);
-  static const Color blueFB = Color(0xFFF0F5FB);
   static const Color orangeEA = Color(0xFFFFF9EA);
   static const Color greenF0 = Color(0xFFEDF8F0);
   static const Color greyFFA = Color(0xFFA0A0A0);

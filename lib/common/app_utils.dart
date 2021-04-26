@@ -47,4 +47,10 @@ class AppUtils {
 
     return list;
   }
+
+  static String getChoosedDayName(String dayName, String stringName) {
+    String name = stringName;
+    if (name.contains(dayName)) name.replaceFirst(dayName, '');
+    return name;
+  }
 }

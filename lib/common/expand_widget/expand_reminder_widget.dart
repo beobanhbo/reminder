@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:reminder/common/app_manager.dart';
+import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/common/time_picker/duration_picker.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
@@ -18,9 +19,14 @@ class ReminderWidget extends StatefulWidget {
 class _ReminderWidgetState extends State<ReminderWidget> {
   Work _work;
   Duration duration;
+  List<DayOfWeek> _listDay = [];
+  String selectedDate = '';
   @override
   void initState() {
     _work = widget.work;
+    _listDay = _work?.week != null
+        ? _work.week.listDay
+        : AppManager.shared.week.listDay;
     duration = widget.work?.remindAtDate ?? Duration(hours: 1);
     super.initState();
   }
@@ -29,7 +35,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       trailing: _buildButtonNotification(),
-      subtitle: Text(AppStrings.Remind),
+      subtitle: _buildDateSelected(),
       title: _buildReminderTitle(),
       children: [
         _buildTimeRepeat(),
@@ -46,8 +52,14 @@ class _ReminderWidgetState extends State<ReminderWidget> {
               _onTimePicker();
             },
             child: widget.work?.remindAtDate != null
-                ? Text('${AppStrings.RemindAt} ${widget.work?.remindAtDate}')
-                : Text(AppStrings.Remind)),
+                ? Text('${AppStrings.RemindAt} ${widget.work?.remindAtDate}',
+                    style: _work.enableReminder
+                        ? AppStyles.textStyleBlue(16)
+                        : AppStyles.textStyleBlackNormal(16))
+                : Text(
+                    AppStrings.Remind,
+                    style: AppStyles.textStyleBlackNormal(16),
+                  )),
       ],
     );
   }
@@ -71,16 +83,9 @@ class _ReminderWidgetState extends State<ReminderWidget> {
       children: [
         ExpansionTile(
           trailing: Icon(Icons.check_circle_outline_outlined),
-          title: Row(
-            children: [
-              Icon(Icons.replay_rounded),
-              Text(AppStrings.Repeat),
-            ],
-          ),
+          title: Text(AppStrings.Repeat),
           children: [
-            _buildDaysOfWeek(_work?.week != null
-                ? _work.week.listDay
-                : AppManager.shared.week.listDay),
+            _buildDaysOfWeek(_listDay),
           ],
         ),
       ],
@@ -101,6 +106,9 @@ class _ReminderWidgetState extends State<ReminderWidget> {
       onTap: () {
         setState(() {
           dayOfWeek.isSelected = !dayOfWeek.isSelected;
+          if (dayOfWeek.isSelected)
+            selectedDate =
+                AppUtils.getChoosedDayName(dayOfWeek.dayName, selectedDate);
         });
       },
       child: Container(
@@ -121,6 +129,17 @@ class _ReminderWidgetState extends State<ReminderWidget> {
         ),
       ),
     );
+  }
+
+  Widget _buildDateSelected() {
+    final unselectedDate = _listDay.firstWhere(
+        (element) => element.isSelected == false,
+        orElse: () => null);
+    if (unselectedDate == null)
+      return Text(AppStrings.Everyday);
+    else {
+      return Text(selectedDate);
+    }
   }
 
   void _onTimePicker() {

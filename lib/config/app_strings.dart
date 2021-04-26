@@ -8,6 +8,7 @@ class AppStrings {
   static const String Remind = "Set Reminder";
   static const String RemindAt = " Remind at";
   static const String Done = "Done";
+  static const String Everyday = "Everyday";
   static const String Complete_task = "Complete this task?";
   static const String Title = "Title";
   static const String Options = "Options";
