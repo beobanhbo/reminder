@@ -12,11 +12,12 @@ void main() async {
   Hive.registerAdapter(WorkBlockHiveAdapter());
   Hive.registerAdapter(WorkHiveAdapter());
   Hive.registerAdapter(WorkTypeHiveAdapter());
+  Hive.registerAdapter(WeekHiveAdapter());
+  Hive.registerAdapter(DayOfWeekHiveAdapter());
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
 }

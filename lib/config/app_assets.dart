@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AppAssets {
-  static final String daily = 'assets/images/daily_1.svg';
-  static final String plan = 'assets/images/plan.svg';
+  static const String daily = 'assets/images/daily_1.svg';
+  static const String plan = 'assets/images/plan.svg';
+  static const String ic_delete_group = 'assets/images/ic_delete_group.svg';
+  static const String ic_edit = 'assets/images/ic_edit.svg';
+  static const String ic_check = 'assets/images/ic_check.svg';
 }
 
 class AppImages {

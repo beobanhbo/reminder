@@ -60,6 +60,8 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
       title: fields[1] as String,
       createAt: fields[2] as String,
       stage: fields[3] as int,
+      enableReminder: fields[7] as bool,
+      week: fields[6] as WeekHive,
       workType: fields[4] as WorkTypeHive,
       workChildMap: (fields[5] as Map)?.cast<String, WorkHive>(),
     );
@@ -68,7 +70,7 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
   @override
   void write(BinaryWriter writer, WorkHive obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -80,7 +82,11 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
       ..writeByte(4)
       ..write(obj.workType)
       ..writeByte(5)
-      ..write(obj.workChildMap);
+      ..write(obj.workChildMap)
+      ..writeByte(6)
+      ..write(obj.week)
+      ..writeByte(7)
+      ..write(obj.enableReminder);
   }
 
   @override
@@ -124,6 +130,77 @@ class WorkBlockHiveAdapter extends TypeAdapter<WorkBlockHive> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is WorkBlockHiveAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class DayOfWeekHiveAdapter extends TypeAdapter<DayOfWeekHive> {
+  @override
+  final int typeId = 3;
+
+  @override
+  DayOfWeekHive read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return DayOfWeekHive(
+      dayName: fields[0] as String,
+      isSelected: fields[1] as bool,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, DayOfWeekHive obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.dayName)
+      ..writeByte(1)
+      ..write(obj.isSelected);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DayOfWeekHiveAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class WeekHiveAdapter extends TypeAdapter<WeekHive> {
+  @override
+  final int typeId = 4;
+
+  @override
+  WeekHive read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return WeekHive(
+      listDay: (fields[0] as List)?.cast<DayOfWeekHive>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, WeekHive obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.listDay);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WeekHiveAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

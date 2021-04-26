@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:reminder/common/app_manager.dart';
 import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/common/custom_app_bar/custom_app_bar.dart';
+import 'package:reminder/common/expand_widget/expand_reminder_widget.dart';
 import 'package:reminder/common/task_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
@@ -26,9 +28,12 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
   bool _isEnableAddTask = false;
   String _task = '';
   List<Work> _listWork;
+  Work _work;
+  List<DayOfWeek> _listDayOfWeek = [];
   FocusNode _focusNode;
   FocusNode focusNode;
   MainScreenBloc _mainScreenBloc;
+  String appTitle = '';
   void _initTextController() {
     _titleTextController = TextEditingController();
     _taskTextController = TextEditingController();
@@ -36,15 +41,21 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
 
   @override
   void initState() {
+    _work = widget.work;
     _mainScreenBloc = widget.mainScreenBloc;
     _initTextController();
     _listWork = [];
 
     _taskTextController.addListener(_addTaskListener);
     _focusNode = FocusNode();
-    // if (widget.work != null) {
-    //   onEditWork(widget.work);
-    // }
+    appTitle = AppStrings.AddWork;
+    if (_work != null) {
+      onEditWork(_work);
+      _listDayOfWeek = _work.week.listDay;
+    } else {
+      _listDayOfWeek = AppManager.shared.week?.listDay;
+    }
+
     super.initState();
   }
 
@@ -63,7 +74,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: AppStrings.AddWork,
+        title: appTitle,
         centerTitle: true,
         autoLeading: true,
       ),
@@ -110,6 +121,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                       ),
                     ),
                   ),
+                  _buildReminder(_work),
                   _buildSubTask(),
                   Stack(
                     alignment: Alignment.bottomCenter,
@@ -121,25 +133,22 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                           }
                         },
                         child: Container(
+                          padding: EdgeInsets.all(8),
                           color: AppColors.blue,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              ButtonBar(
-                                children: <Widget>[
-                                  TextButton.icon(
-                                    icon: Icon(
-                                      Icons.check,
-                                      color: AppColors.white,
-                                    ),
-                                    onPressed: () {},
-                                    label: Text(
-                                      AppStrings.Done,
-                                      style: AppStyles.textStyleWhite(16),
-                                    ),
-                                  ),
-                                ],
+                              Icon(
+                                Icons.check,
+                                color: AppColors.white,
                               ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                AppStrings.Done,
+                                style: AppStyles.textStyleWhite(16),
+                              )
                             ],
                           ),
                         ),
@@ -292,12 +301,13 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
     Work work = Work(
         title: _titleTextController.text,
         workChildMap: subTaskMap,
-        id: widget.work?.id != null
-            ? widget.work.id
+        id: _work?.id != null
+            ? _work.id
             : DateTime.now().microsecondsSinceEpoch.toString(),
-        createAt: DateTime.now().microsecondsSinceEpoch.toString());
+        createAt: DateTime.now().microsecondsSinceEpoch.toString(),
+        week: Week(listDay: _listDayOfWeek));
 
-    widget.work != null
+    _work != null
         ? _mainScreenBloc.add(UpdateWorkEvent(work))
         : _mainScreenBloc.add(AddNewWorkEvent(work));
 
@@ -308,10 +318,13 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
   }
 
   void onEditWork(Work work) {
-    // _titleTextController.text = work.title;
-    // widget.work.childWorkMap.entries
-    //     .map((item) => _listWork.add(item.value))
-    //     .toList();
+    setState(() {
+      appTitle = AppStrings.EditTask;
+    });
+    _titleTextController.text = work.title;
+    _work.workChildMap.entries
+        .map((item) => _listWork.add(item.value))
+        .toList();
   }
 
   onClickCheckBox(Work work) {
@@ -321,5 +334,11 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
     //   }
     // });
     setState(() {});
+  }
+
+  Widget _buildReminder(Work work) {
+    return ReminderWidget(
+      work: _work,
+    );
   }
 }

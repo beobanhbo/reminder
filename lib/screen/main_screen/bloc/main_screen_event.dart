@@ -15,3 +15,9 @@ class UpdateWorkEvent extends MainScreenEvent {
 
   UpdateWorkEvent(this.work);
 }
+
+class DeleteWorkEvent extends MainScreenEvent {
+  final String workID;
+
+  DeleteWorkEvent(this.workID);
+}

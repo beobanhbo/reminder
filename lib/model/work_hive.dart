@@ -16,12 +16,18 @@ class WorkHive extends HiveObject {
   WorkTypeHive workType;
   @HiveField(5)
   Map<String, WorkHive> workChildMap;
+  @HiveField(6)
+  WeekHive week;
+  @HiveField(7)
+  bool enableReminder;
 
   WorkHive({
     this.id,
     this.title,
     this.createAt,
     this.stage,
+    this.enableReminder = false,
+    this.week,
     this.workType,
     this.workChildMap,
   });
@@ -32,6 +38,8 @@ class WorkHive extends HiveObject {
       title: title ?? "",
       createAt: createAt ?? "",
       stage: stage ?? 0,
+      enableReminder: enableReminder ?? false,
+      week: week != null ? week.toOrigin() : [],
       workChildMap: workChildMap == null
           ? {}
           : Map.fromEntries(workChildMap.entries.map(
@@ -70,5 +78,41 @@ class WorkBlockHive extends HiveObject {
   void addWork(Work work) {
     workBlockHiveMap ??= {};
     workBlockHiveMap.putIfAbsent(work.id, () => work.toHive());
+  }
+
+  void updateWork(Work work) {
+    workBlockHiveMap.update(work.id, (workHive) => work.toHive());
+  }
+
+  void deleteWork(String workID) {
+    workBlockHiveMap.removeWhere((key, value) => key == workID);
+  }
+}
+
+@HiveType(typeId: 3)
+class DayOfWeekHive extends HiveObject {
+  @HiveField(0)
+  String dayName;
+  @HiveField(1)
+  bool isSelected;
+
+  DayOfWeekHive({this.dayName, this.isSelected});
+  DayOfWeek toOrigin() {
+    return DayOfWeek(dayName: dayName ?? "", isSelected: isSelected ?? false);
+  }
+}
+
+@HiveType(typeId: 4)
+class WeekHive extends HiveObject {
+  @HiveField(0)
+  List<DayOfWeekHive> listDay;
+
+  WeekHive({this.listDay});
+  Week toOrigin() {
+    return Week(
+      listDay: listDay.isEmpty
+          ? []
+          : listDay.map((entries) => entries.toOrigin()).toList(),
+    );
   }
 }

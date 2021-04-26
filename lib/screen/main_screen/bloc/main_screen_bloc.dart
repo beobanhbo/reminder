@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:reminder/common/app_manager.dart';
+import 'package:reminder/model/work.dart';
 import 'package:reminder/model/work_hive.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_event.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_state.dart';
@@ -16,6 +22,10 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       yield* _mapEventFetchData(event);
     } else if (event is AddNewWorkEvent) {
       yield* _mapEventAddWork(event);
+    } else if (event is UpdateWorkEvent) {
+      yield* _mapEventUpdateWork(event);
+    } else if (event is DeleteWorkEvent) {
+      yield* _mapEventDeleteWork(event);
     }
   }
 
@@ -26,6 +36,18 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
       WorkBlockHive workBlockHive =
           Hive.box<WorkBlockHive>('workBlocHive').getAt(0);
+
+      initializeDateFormatting('en', null);
+
+      final List<String> listDays =
+          DateFormat.EEEE(Platform.localeName).dateSymbols.SHORTWEEKDAYS;
+      Week week = Week(
+          listDay: listDays
+              .map((entries) => DayOfWeek(dayName: entries, isSelected: false))
+              .toList());
+      AppManager.shared.week = week;
+      print(AppManager.shared.week.listDay);
+
       yield FetchDataSuccess(workBlockHive: workBlockHive);
     } catch (e) {}
   }
@@ -35,6 +57,28 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     if (workBox.isNotEmpty) {
       WorkBlockHive workBlockHive = workBox.getAt(0);
       workBlockHive.addWork(event.work);
+      workBlockHive.save();
+
+      yield FetchDataSuccess(workBlockHive: workBlockHive);
+    }
+  }
+
+  Stream<MainScreenState> _mapEventUpdateWork(UpdateWorkEvent event) async* {
+    final workBox = Hive.box<WorkBlockHive>('workBlocHive');
+    if (workBox.isNotEmpty) {
+      WorkBlockHive workBlockHive = workBox.getAt(0);
+      workBlockHive.updateWork(event.work);
+      workBlockHive.save();
+
+      yield FetchDataSuccess(workBlockHive: workBlockHive);
+    }
+  }
+
+  Stream<MainScreenState> _mapEventDeleteWork(DeleteWorkEvent event) async* {
+    final workBox = Hive.box<WorkBlockHive>('workBlocHive');
+    if (workBox.isNotEmpty) {
+      WorkBlockHive workBlockHive = workBox.getAt(0);
+      workBlockHive.deleteWork(event.workID);
       workBlockHive.save();
 
       yield FetchDataSuccess(workBlockHive: workBlockHive);
