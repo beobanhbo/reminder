@@ -53,6 +53,8 @@ class AppUtils {
 
     listDay.forEach((element) {
       if (element.isSelected) {
+        if (lsString.length >= 1) lsString.add(',');
+
         lsString.add(element.dayName);
       } else
         lsString.remove(element.dayName);
