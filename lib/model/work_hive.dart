@@ -20,13 +20,19 @@ class WorkHive extends HiveObject {
   WeekHive week;
   @HiveField(7)
   bool enableReminder;
+  @HiveField(8)
+  bool isRepeat;
+  @HiveField(9)
+  DateTime remindAtTime;
 
   WorkHive({
     this.id,
     this.title,
     this.createAt,
     this.stage,
+    this.remindAtTime,
     this.enableReminder = false,
+    this.isRepeat = false,
     this.week,
     this.workType,
     this.workChildMap,
@@ -38,7 +44,9 @@ class WorkHive extends HiveObject {
       title: title ?? "",
       createAt: createAt ?? "",
       stage: stage ?? 0,
+      remindAtTime: remindAtTime ?? DateTime(1969, 1, 20, 7, 0, 0),
       enableReminder: enableReminder ?? false,
+      isRepeat: isRepeat ?? false,
       week: week != null ? week.toOrigin() : [],
       workChildMap: workChildMap == null
           ? {}

@@ -8,14 +8,15 @@ import 'package:reminder/common/task_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
+import 'package:reminder/model/main_args.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_bloc.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_event.dart';
 
 class EditWorkScreen extends StatefulWidget {
   final MainScreenBloc mainScreenBloc;
-  final Work work;
-  EditWorkScreen(this.mainScreenBloc, {this.work});
+  final MainArgs mainArgs;
+  EditWorkScreen(this.mainScreenBloc, {this.mainArgs});
 
   @override
   _EditWorkScreenState createState() => _EditWorkScreenState();
@@ -23,7 +24,7 @@ class EditWorkScreen extends StatefulWidget {
 
 class _EditWorkScreenState extends State<EditWorkScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _titleTextController, _phoneTextController;
+  TextEditingController _titleTextController;
   TextEditingController _taskTextController;
   bool _isEnableAddTask = false;
   String _task = '';
@@ -41,7 +42,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
 
   @override
   void initState() {
-    _work = widget.work;
+    _work = widget.mainArgs.work;
     _mainScreenBloc = widget.mainScreenBloc;
     _initTextController();
     _listWork = [];
@@ -49,10 +50,11 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
     _taskTextController.addListener(_addTaskListener);
     _focusNode = FocusNode();
     appTitle = AppStrings.AddWork;
-    if (_work != null) {
+    if (widget.mainArgs.screenType == ScreenType.EDIT_WORK) {
       onEditWork(_work);
       _listDayOfWeek = _work.week.listDay;
     } else {
+      _work = Work();
       _listDayOfWeek = AppManager.shared.week?.listDay;
     }
 
@@ -92,7 +94,8 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                 children: <Widget>[
                   SingleChildScrollView(
                     child: Container(
-                      padding: EdgeInsets.only(left: 8, right: 8, bottom: 12),
+                      padding:
+                          EdgeInsets.only(/*left: 8, right: 8,*/ bottom: 12),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -168,7 +171,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
   Widget _buildSubTask() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(top: 12, left: 8.0, right: 8),
+        padding: const EdgeInsets.only(top: 12 /*, left: 8.0, right: 8*/),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[_buildSubTaskHeader(), _buildListTask()],
@@ -196,7 +199,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(10, 16, 10, 0),
+                    contentPadding: EdgeInsets.fromLTRB(10, 24, 10, 0),
                     suffixIcon: _isEnableAddTask
                         ? IconButton(
                             onPressed: () {
@@ -222,19 +225,19 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
             SizedBox(
               width: 10,
             ),
-            ElevatedButton(
-              child: TextButton.icon(
-                icon: Icon(
-                  Icons.add,
-                  color: AppColors.white,
-                ),
-                onPressed: () {
-                  _addTask();
-                },
-                label: Text(
-                  AppStrings.AddTask,
-                  style: AppStyles.textStyleWhite(16),
-                ),
+            ElevatedButton.icon(
+              onPressed: _isEnableAddTask
+                  ? () {
+                      _addTask();
+                    }
+                  : null,
+              icon: Icon(
+                Icons.add,
+                color: AppColors.white,
+              ),
+              label: Text(
+                AppStrings.AddTask,
+                style: AppStyles.textStyleWhite(16),
               ),
             ),
           ],
@@ -301,13 +304,16 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
     Work work = Work(
         title: _titleTextController.text,
         workChildMap: subTaskMap,
+        remindAtTime: _work.remindAtTime,
+        enableReminder: _work.enableReminder,
+        isRepeat: _work.isRepeat,
         id: _work?.id != null
             ? _work.id
             : DateTime.now().microsecondsSinceEpoch.toString(),
         createAt: DateTime.now().microsecondsSinceEpoch.toString(),
         week: Week(listDay: _listDayOfWeek));
 
-    _work != null
+    widget.mainArgs.screenType == ScreenType.EDIT_WORK
         ? _mainScreenBloc.add(UpdateWorkEvent(work))
         : _mainScreenBloc.add(AddNewWorkEvent(work));
 

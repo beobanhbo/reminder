@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/model/work_hive.dart';
@@ -61,5 +62,12 @@ class AppUtils {
     });
 
     return lsString;
+  }
+
+  static String convertFormatDateTime(DateTime dateTime) {
+    String hhmma = DateFormat.jm().format(dateTime);
+    // DateTime result = DateTime.parse(dateTime.toString());
+    // TimeOfDay.hoursPerDay
+    return hhmma;
   }
 }

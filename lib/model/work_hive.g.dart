@@ -60,7 +60,9 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
       title: fields[1] as String,
       createAt: fields[2] as String,
       stage: fields[3] as int,
+      remindAtTime: fields[9] as DateTime,
       enableReminder: fields[7] as bool,
+      isRepeat: fields[8] as bool,
       week: fields[6] as WeekHive,
       workType: fields[4] as WorkTypeHive,
       workChildMap: (fields[5] as Map)?.cast<String, WorkHive>(),
@@ -70,7 +72,7 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
   @override
   void write(BinaryWriter writer, WorkHive obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -86,7 +88,11 @@ class WorkHiveAdapter extends TypeAdapter<WorkHive> {
       ..writeByte(6)
       ..write(obj.week)
       ..writeByte(7)
-      ..write(obj.enableReminder);
+      ..write(obj.enableReminder)
+      ..writeByte(8)
+      ..write(obj.isRepeat)
+      ..writeByte(9)
+      ..write(obj.remindAtTime);
   }
 
   @override

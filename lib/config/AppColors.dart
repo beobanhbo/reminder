@@ -56,7 +56,6 @@ class AppColors {
   static Color pinkishGrey = Color(0xFFC0C0C0);
   static Color greyAD = Color(0xFFADADAD);
   static Color lighterGrey = Color(0xFFE0E0E0);
-  static Color Grey73 = Color(0xFF737373);
   static Color lighterOrange = Color(0xFFFDEEDE);
   static Color lighterOrangeDarkMode = Color(0xFFFB9716);
   static Color lighterlightGrey = Color(0xFFF7F7F7);

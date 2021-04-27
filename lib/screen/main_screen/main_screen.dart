@@ -9,6 +9,7 @@ import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_assets.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
+import 'package:reminder/model/main_args.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/screen/edit_work_screen/edit_work_screen.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_event.dart';
@@ -42,7 +43,8 @@ class _MainScreenState extends State<MainScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            _onOpenEditScreen();
+            _onOpenEditScreen(
+                mainArgs: MainArgs(screenType: ScreenType.ADD_WORK));
           },
         ),
         body: SafeArea(
@@ -123,7 +125,10 @@ class _MainScreenState extends State<MainScreen> {
                       slidableKey: Key(_listWork[index].id),
                       slidableController: slidableController,
                       onEdit: () {
-                        _onOpenEditScreen(work: _listWork[index]);
+                        _onOpenEditScreen(
+                            mainArgs: MainArgs(
+                                work: _listWork[index],
+                                screenType: ScreenType.EDIT_WORK));
                       },
                       onCheck: () {
                         _onTapCheck(_listWork[index]);
@@ -146,7 +151,8 @@ class _MainScreenState extends State<MainScreen> {
         alignment: Alignment.center,
         child: GestureDetector(
             onTap: () {
-              _onOpenEditScreen();
+              _onOpenEditScreen(
+                  mainArgs: MainArgs(screenType: ScreenType.EDIT_WORK));
             },
             child: Container(
               child: Container(
@@ -184,14 +190,14 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void _onOpenEditScreen({Work work}) {
+  void _onOpenEditScreen({MainArgs mainArgs}) {
     showDialog(
         context: context,
         builder: (context) => BlocProvider.value(
               value: _mainScreenBloc,
               child: EditWorkScreen(
                 _mainScreenBloc,
-                work: work,
+                mainArgs: mainArgs,
               ),
             ));
   }

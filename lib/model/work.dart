@@ -3,8 +3,8 @@ import 'package:reminder/model/work_hive.dart';
 class Work {
   final String id, title, createAt;
   int stage;
-  String remindAtDate;
-  bool enableReminder;
+  DateTime remindAtTime;
+  bool enableReminder, isRepeat;
   WorkTypeHive workType;
   Map<String, Work> workChildMap;
   Week week;
@@ -12,9 +12,10 @@ class Work {
     this.id,
     this.title,
     this.createAt,
-    this.remindAtDate,
+    this.remindAtTime,
     this.stage,
     this.enableReminder = false,
+    this.isRepeat = false,
     this.week,
     this.workType,
     this.workChildMap,
@@ -25,7 +26,9 @@ class Work {
       title: title ?? "",
       createAt: createAt ?? "",
       stage: stage ?? 0,
+      remindAtTime: remindAtTime ?? DateTime(1969, 1, 20, 7, 0, 0),
       enableReminder: enableReminder ?? false,
+      isRepeat: isRepeat ?? false,
       week: week != null ? week.toHive() : [],
       workChildMap: workChildMap == null
           ? {}
@@ -40,6 +43,7 @@ class Work {
 }
 
 enum WorkType { DAILY, PLAN }
+enum ScreenType { ADD_WORK, EDIT_WORK }
 
 class Week {
   List<DayOfWeek> listDay;

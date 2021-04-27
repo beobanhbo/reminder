@@ -7,6 +7,7 @@ class CustomAppTheme {
       brightness: Brightness.light,
       backgroundColor: AppColors.white,
       primaryColor: AppColors.white,
+      dividerColor: Colors.transparent,
       appBarTheme: AppBarTheme(color: AppColors.blue),
       textTheme: TextTheme(
           headline1: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));

@@ -46,8 +46,6 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
               .map((entries) => DayOfWeek(dayName: entries, isSelected: false))
               .toList());
       AppManager.shared.week = week;
-      print(AppManager.shared.week.listDay);
-
       yield FetchDataSuccess(workBlockHive: workBlockHive);
     } catch (e) {}
   }

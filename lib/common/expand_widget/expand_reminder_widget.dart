@@ -18,30 +18,81 @@ class ReminderWidget extends StatefulWidget {
 
 class _ReminderWidgetState extends State<ReminderWidget> {
   Work _work;
-  Duration duration;
-  bool isEnableNotification;
+  DateTime _dateTime;
+  bool isEnableNotification, isEnableRepeat;
   List<DayOfWeek> _listDay = [];
   List<String> selectedDate = [];
+  final key = GlobalKey();
   @override
   void initState() {
     _work = widget.work;
     isEnableNotification = _work?.enableReminder ?? false;
+    isEnableRepeat = _work?.isRepeat ?? false;
     _listDay = _work?.week != null
         ? _work.week.listDay
         : AppManager.shared.week.listDay;
-    duration = _work?.remindAtDate ?? Duration(hours: 1);
+    getChoosedDay(_listDay);
+
+    _dateTime = _work?.remindAtTime;
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    return _buildHeaderReminder();
     return ExpansionTile(
       trailing: _buildButtonNotification(),
       subtitle: _buildDateSelected(),
       title: _buildReminderTitle(),
+      initiallyExpanded: true,
       children: [
         _buildTimeRepeat(),
       ],
+    );
+  }
+
+  Widget _buildHeaderReminder() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _onTimePicker();
+                },
+                child: _dateTime != null
+                    ? Text(
+                        '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
+                        style: isEnableNotification
+                            ? AppStyles.textStyleBlue(16)
+                            : AppStyles.textStyleBlackNormal(16))
+                    : Text(
+                        AppStrings.Remind,
+                        style: AppStyles.textStyleBlackNormal(16),
+                      ),
+              ),
+              _buildButtonNotification()
+            ],
+          ),
+          Container(child: _buildDateSelected()),
+          ExpansionTile(
+            trailing: _buildRepeatButton(),
+            title: Text(
+              AppStrings.Repeat,
+              style: isEnableRepeat
+                  ? AppStyles.textStyleBlue(16)
+                  : AppStyles.textStyleBlackNormal(16),
+            ),
+            children: [
+              _buildDaysOfWeek(_listDay),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -53,9 +104,9 @@ class _ReminderWidgetState extends State<ReminderWidget> {
             onTap: () {
               _onTimePicker();
             },
-            child: duration != null
+            child: _dateTime != null
                 ? Text(
-                    '${AppStrings.RemindAt} ${duration.toString().replaceFirst(":00.000000", "")}',
+                    '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
                     style: isEnableNotification
                         ? AppStyles.textStyleBlue(16)
                         : AppStyles.textStyleBlackNormal(16))
@@ -73,7 +124,6 @@ class _ReminderWidgetState extends State<ReminderWidget> {
         setState(() {
           isEnableNotification = !isEnableNotification;
           if (_work != null) _work.enableReminder = isEnableNotification;
-//          _work.enableReminder = !_work?.enableReminder ?? false;
         });
       },
       child: Icon(
@@ -87,13 +137,34 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     return Column(
       children: [
         ExpansionTile(
-          trailing: Icon(Icons.check_circle_outline_outlined),
-          title: Text(AppStrings.Repeat),
+          initiallyExpanded: isEnableRepeat,
+          trailing: _buildRepeatButton(),
+          title: Text(
+            AppStrings.Repeat,
+            style: isEnableRepeat
+                ? AppStyles.textStyleBlue(16)
+                : AppStyles.textStyleBlackNormal(16),
+          ),
           children: [
             _buildDaysOfWeek(_listDay),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildRepeatButton() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isEnableRepeat = !isEnableRepeat;
+          if (_work != null) _work.isRepeat = isEnableRepeat;
+        });
+      },
+      child: Icon(
+        Icons.check_circle_outline_outlined,
+        color: isEnableRepeat ? AppColors.blue : AppColors.grey73,
+      ),
     );
   }
 
@@ -111,8 +182,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
       onTap: () {
         setState(() {
           dayOfWeek.isSelected = !dayOfWeek.isSelected;
-
-          selectedDate = AppUtils.getChoosedDayName(_listDay);
+          getChoosedDay(_listDay);
         });
       },
       child: Container(
@@ -147,15 +217,19 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   }
 
   void _onTimePicker() {
-    showDurationPicker(context, initDuration: duration,
-        onDurationChanged: (duration) {
-      if (duration == null)
-        this.duration = this.duration ?? Duration(hours: 1, minutes: 0);
-      else
-        this.duration = duration;
-      widget.work?.remindAtDate =
-          this.duration.toString().replaceFirst(":00.000000", "");
+    DateTime now;
+    _dateTime != null ? now = _dateTime : now = DateTime.now();
+
+    showDurationPicker(context,
+        initDateTime: _work?.remindAtTime == null ? now : _work?.remindAtTime,
+        onDateTimeChanged: (time) {
+      _dateTime = time == null ? now : time;
+      _work?.remindAtTime = _dateTime;
       setState(() {});
     });
+  }
+
+  void getChoosedDay(List<DayOfWeek> listDay) {
+    selectedDate = AppUtils.getChoosedDayName(listDay);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Color, Colors, GestureDetector;
 import 'package:flutter/cupertino.dart'
     show
@@ -10,11 +11,10 @@ import 'package:flutter/cupertino.dart'
         Column,
         Container,
         CrossAxisAlignment,
+        CupertinoDatePicker,
         CupertinoTextThemeData,
         CupertinoTheme,
         CupertinoThemeData,
-        CupertinoTimerPicker,
-        CupertinoTimerPickerMode,
         EdgeInsets,
         Expanded,
         FontWeight,
@@ -34,18 +34,18 @@ export 'package:flutter/material.dart' show Color, Colors;
 
 void showDurationPicker(BuildContext context,
     {Key key,
-    @required Function(Duration value) onDurationChanged,
+    @required Function(DateTime value) onDateTimeChanged,
     int minuteInterval = 1,
     Color backgroundColor,
     bool useRootNavigator = true,
-    Duration initDuration}) {
+    DateTime initDateTime}) {
   backgroundColor = backgroundColor ?? AppColors.white;
-  Duration duration;
+  DateTime dateTime;
   // Default to right now.
 
   var doneButton = GestureDetector(
       onTap: () {
-        onDurationChanged(duration);
+        onDateTimeChanged(dateTime);
         Navigator.of(context).pop();
       },
       child: Container(
@@ -87,17 +87,21 @@ void showDurationPicker(BuildContext context,
             color: AppColors.white,
             child: CupertinoTheme(
               data: CupertinoThemeData(
-                  textTheme: CupertinoTextThemeData(
-                      pickerTextStyle: AppStyles.textStyleBlackNormal(21))),
-              child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm,
-                onTimerDurationChanged: (value) {
-                  if (onDurationChanged == null) return;
-                  duration = value;
+                brightness: Brightness.dark,
+                textTheme: CupertinoTextThemeData(
+                    dateTimePickerTextStyle: AppStyles.textStyleBlackNormal(21),
+                    pickerTextStyle: AppStyles.textStyleBlackNormal(21)),
+              ),
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                onDateTimeChanged: (DateTime value) {
+                  if (onDateTimeChanged == null) return;
+
+                  dateTime = DateTime(0000, 01, 01, value.hour, value.minute);
                 },
-                initialTimerDuration:
-                    initDuration != null ? initDuration : Duration(hours: 1),
+                initialDateTime: initDateTime,
                 minuteInterval: minuteInterval,
+                use24hFormat: true,
                 backgroundColor: backgroundColor,
               ),
             ),
