@@ -78,6 +78,7 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
           ),
           Text(
             widget.work.title,
+            overflow: TextOverflow.ellipsis,
             style: widget.work.stage == 0
                 ? AppStyles.textStyleBlackNormal(16)
                 : AppStyles.textStyleGreenNormal(16),
