@@ -66,6 +66,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     if (workBox.isNotEmpty) {
       WorkBlockHive workBlockHive = workBox.getAt(0);
       workBlockHive.updateWork(event.work);
+      if (event.work.stage == 1) {
+        AppUtils.bringWorkToLast(event.work);
+      }
       workBlockHive.save();
 
       yield FetchDataSuccess(workBlockHive: workBlockHive);

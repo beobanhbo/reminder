@@ -39,6 +39,21 @@ class AppUtils {
     }
   }
 
+  static void bringWorkToLast(Work work) {
+    final workBox = Hive.box<WorkBlockHive>('workBlocHive');
+    if (workBox.isNotEmpty) {
+      WorkBlockHive workBlockHive = workBox.getAt(0);
+      workBlockHive.workBlockHiveMap.remove(work.id);
+
+      List<WorkHive> list = workBlockHive.workBlockHiveMap.values.toList();
+      list.insert(0, work.toHive());
+
+      workBlockHive.workBlockHiveMap = Map.fromIterable(list,
+          key: (entries) => entries.id, value: (entries) => entries);
+      workBlockHive.save();
+    }
+  }
+
   static List<Work> getListWork(WorkBlockHive workBlockHive) {
     List<Work> list = [];
     if (workBlockHive.workBlockHiveMap != null)
@@ -66,8 +81,7 @@ class AppUtils {
 
   static String convertFormatDateTime(DateTime dateTime) {
     String hhmma = DateFormat.jm().format(dateTime);
-    // DateTime result = DateTime.parse(dateTime.toString());
-    // TimeOfDay.hoursPerDay
+
     return hhmma;
   }
 }

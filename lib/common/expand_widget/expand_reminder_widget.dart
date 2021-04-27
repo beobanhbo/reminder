@@ -22,7 +22,6 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   bool isEnableNotification, isEnableRepeat;
   List<DayOfWeek> _listDay = [];
   List<String> selectedDate = [];
-  final key = GlobalKey();
   @override
   void initState() {
     _work = widget.work;
@@ -39,17 +38,15 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    selectedDate.clear();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _buildHeaderReminder();
-    return ExpansionTile(
-      trailing: _buildButtonNotification(),
-      subtitle: _buildDateSelected(),
-      title: _buildReminderTitle(),
-      initiallyExpanded: true,
-      children: [
-        _buildTimeRepeat(),
-      ],
-    );
   }
 
   Widget _buildHeaderReminder() {
@@ -59,63 +56,30 @@ class _ReminderWidgetState extends State<ReminderWidget> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _onTimePicker();
-                },
-                child: _dateTime != null
-                    ? Text(
-                        '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
-                        style: isEnableNotification
-                            ? AppStyles.textStyleBlue(16)
-                            : AppStyles.textStyleBlackNormal(16))
-                    : Text(
-                        AppStrings.Remind,
-                        style: AppStyles.textStyleBlackNormal(16),
-                      ),
-              ),
-              _buildButtonNotification()
-            ],
+            children: [_buildReminderTitle(), _buildButtonNotification()],
           ),
           Container(child: _buildDateSelected()),
-          ExpansionTile(
-            trailing: _buildRepeatButton(),
-            title: Text(
-              AppStrings.Repeat,
-              style: isEnableRepeat
-                  ? AppStyles.textStyleBlue(16)
-                  : AppStyles.textStyleBlackNormal(16),
-            ),
-            children: [
-              _buildDaysOfWeek(_listDay),
-            ],
-          ),
+          _buildTimeRepeat(),
         ],
       ),
     );
   }
 
   Widget _buildReminderTitle() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-            onTap: () {
-              _onTimePicker();
-            },
-            child: _dateTime != null
-                ? Text(
-                    '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
-                    style: isEnableNotification
-                        ? AppStyles.textStyleBlue(16)
-                        : AppStyles.textStyleBlackNormal(16))
-                : Text(
-                    AppStrings.Remind,
-                    style: AppStyles.textStyleBlackNormal(16),
-                  )),
-      ],
-    );
+    return GestureDetector(
+        onTap: () {
+          _onTimePicker();
+        },
+        child: _dateTime != null
+            ? Text(
+                '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
+                style: isEnableNotification
+                    ? AppStyles.textStyleBlue(16)
+                    : AppStyles.textStyleBlackNormal(16))
+            : Text(
+                AppStrings.Remind,
+                style: AppStyles.textStyleBlackNormal(16),
+              ));
   }
 
   Widget _buildButtonNotification() {

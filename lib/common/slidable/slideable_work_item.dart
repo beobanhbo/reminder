@@ -30,12 +30,13 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
       actionPane: SlidableDrawerActionPane(),
       key: widget.slidableKey,
       secondaryActions: [
-        IconSlideAction(
-          onTap: widget.onCheck,
-          iconWidget: AppImages.asset(
-              assetPath: AppAssets.ic_check, color: AppColors.white),
-          color: AppColors.green,
-        ),
+        if (widget.work.stage != 1)
+          IconSlideAction(
+            onTap: widget.onCheck,
+            iconWidget: AppImages.asset(
+                assetPath: AppAssets.ic_check, color: AppColors.white),
+            color: AppColors.green,
+          ),
         IconSlideAction(
           onTap: widget.onEdit,
           iconWidget: AppImages.asset(
