@@ -84,4 +84,24 @@ class AppUtils {
 
     return hhmma;
   }
+
+  static bool isNewDay(DateTime latestDate, DateTime currentDate) {
+    return currentDate.difference(latestDate).inDays > 0 ? true : false;
+  }
+
+  static String formatTime(String datetime, String dateFormat) {
+    String result = "";
+    try {
+      result =
+          DateFormat(dateFormat).format(DateTime.parse(datetime).toLocal());
+    } catch (e) {}
+    return result;
+  }
+
+  static String microSecondToDate(int microsecond, {String format}) {
+    String dateTime =
+        DateTime.fromMicrosecondsSinceEpoch(microsecond).toString();
+    String dateFormat = formatTime(dateTime, format ?? 'yyyy-MM-dd HH:mm');
+    return dateFormat;
+  }
 }

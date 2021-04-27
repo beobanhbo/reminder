@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:reminder/common/app_manager.dart';
+import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/model/work.dart';
 part 'work_hive.g.dart';
 
@@ -86,6 +88,8 @@ class WorkBlockHive extends HiveObject {
   void addWork(Work work) {
     workBlockHiveMap ??= {};
     workBlockHiveMap.putIfAbsent(work.id, () => work.toHive());
+    AppManager.shared.latestDate =
+        DateTime.parse(AppUtils.microSecondToDate(int.parse(work.id)));
   }
 
   void updateWork(Work work) {

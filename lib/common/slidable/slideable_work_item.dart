@@ -67,7 +67,7 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
           widget.work.stage == 0
               ? Icon(
                   Icons.check_circle_outline_outlined,
-                  color: AppColors.greyDivider,
+                  color: AppColors.lightTextGrey,
                 )
               : Icon(
                   Icons.check_circle_outline_outlined,
