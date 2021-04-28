@@ -77,7 +77,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
                     ? AppStyles.textStyleBlue(16)
                     : AppStyles.textStyleBlackNormal(16))
             : Text(
-                AppStrings.Remind,
+                AppStrings.SetRemind,
                 style: AppStyles.textStyleBlackNormal(16),
               ));
   }

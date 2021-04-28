@@ -8,6 +8,7 @@ import 'package:reminder/common/task_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
+import 'package:reminder/config/push_notification.dart';
 import 'package:reminder/model/main_args.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_bloc.dart';
@@ -131,9 +132,9 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          if (_formKey.currentState.validate()) {
-                            _onCreateWork();
-                          }
+                          _onCreateWork();
+
+                          if (_formKey.currentState.validate()) {}
                         },
                         child: Container(
                           padding: EdgeInsets.all(8),
@@ -289,13 +290,13 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
     setState(() {});
   }
 
-  _onCreateWork() {
-    //   // scheduleNotification(localNotificationsPlugin, 1, "Remind", "Payload",
-    //   //     DateTime.now().add(Duration(seconds: 2)));
-    //   // // turnOffNotificationByID(localNotificationsPlugin, 0);
-    //   // scheduleNotificationPeriodicallyShow(localNotificationsPlugin, 0, "Remind",
-    //   //     "Payload", RepeatInterval.EveryMinute);
-    //
+  _onCreateWork() async {
+    // scheduleNotification(localNotificationsPlugin, 1, "Remind", "Payload",
+    //     DateTime.now().add(Duration(seconds: 2)));
+    // // turnOffNotificationByID(localNotificationsPlugin, 0);
+    // scheduleNotificationPeriodicallyShow(localNotificationsPlugin, 0, "Remind",
+    //     "Payload", RepeatInterval.EveryMinute);
+    String timestamp = DateTime.now().microsecondsSinceEpoch.toString();
     Map<String, Work> subTaskMap = {};
     List<String> listID = [];
     _listWork.forEach((item) => listID.add(item.id));
@@ -307,11 +308,32 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
         remindAtTime: _work.remindAtTime,
         enableReminder: _work.enableReminder,
         isRepeat: _work.isRepeat,
-        id: _work?.id != null
-            ? _work.id
-            : DateTime.now().microsecondsSinceEpoch.toString(),
-        createAt: DateTime.now().microsecondsSinceEpoch.toString(),
+        id: _work?.id != null ? _work.id : timestamp.substring(7),
+        createAt: timestamp,
         week: Week(listDay: _listDayOfWeek));
+    if (work.enableReminder) {
+      if (work.isRepeat) {
+        await scheduleNotification(
+          flutterLocalNotificationsPlugin,
+          work.remindAtTime,
+          NotificationClass(
+              id: int.parse(work.id),
+              title: AppStrings.Remind,
+              body: work.title,
+              payload: work.title),
+          listDayOfWeek: work.week.listDay,
+        );
+      } else
+        await scheduleNotification(
+          flutterLocalNotificationsPlugin,
+          work.remindAtTime,
+          NotificationClass(
+              id: int.parse(work.id),
+              title: AppStrings.Remind,
+              body: work.title,
+              payload: work.title),
+        );
+    }
 
     widget.mainArgs.screenType == ScreenType.EDIT_WORK
         ? _mainScreenBloc.add(UpdateWorkEvent(work))

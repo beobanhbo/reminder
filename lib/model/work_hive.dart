@@ -107,10 +107,15 @@ class DayOfWeekHive extends HiveObject {
   String dayName;
   @HiveField(1)
   bool isSelected;
+  @HiveField(2)
+  int index;
 
-  DayOfWeekHive({this.dayName, this.isSelected});
+  DayOfWeekHive({this.dayName, this.isSelected, this.index});
   DayOfWeek toOrigin() {
-    return DayOfWeek(dayName: dayName ?? "", isSelected: isSelected ?? false);
+    return DayOfWeek(
+        dayName: dayName ?? "",
+        isSelected: isSelected ?? false,
+        index: index ?? 0);
   }
 }
 

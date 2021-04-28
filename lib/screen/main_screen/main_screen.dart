@@ -152,7 +152,7 @@ class _MainScreenState extends State<MainScreen> {
         child: GestureDetector(
             onTap: () {
               _onOpenEditScreen(
-                  mainArgs: MainArgs(screenType: ScreenType.EDIT_WORK));
+                  mainArgs: MainArgs(screenType: ScreenType.ADD_WORK));
             },
             child: Container(
               child: Container(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -62,6 +64,16 @@ class AppUtils {
       });
 
     return list;
+  }
+
+  static List<String> getListDaysOfWeek() {
+    final List<String> listDays =
+        DateFormat.EEEE(Platform.localeName).dateSymbols.SHORTWEEKDAYS;
+    List<String> listCopy = List.of(listDays);
+    final String sun = listDays.first;
+    listCopy.removeAt(0);
+    listCopy.insert(listCopy.length, sun);
+    return listCopy;
   }
 
   static List<String> getChoosedDayName(List<DayOfWeek> listDay) {

@@ -39,11 +39,12 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
       initializeDateFormatting('en', null);
 
-      final List<String> listDays =
-          DateFormat.EEEE(Platform.localeName).dateSymbols.SHORTWEEKDAYS;
+      final List<String> listDays = AppUtils.getListDaysOfWeek();
+      int index = 1;
       Week week = Week(
           listDay: listDays
-              .map((entries) => DayOfWeek(dayName: entries, isSelected: false))
+              .map((entries) => DayOfWeek(
+                  dayName: entries, isSelected: false, index: index++))
               .toList());
       AppManager.shared.week = week;
       yield FetchDataSuccess(workBlockHive: workBlockHive);

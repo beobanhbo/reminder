@@ -2,10 +2,12 @@ class AppStrings {
   static const String Daily = "Daily";
   static const String AddWork = "Add Work";
   static const String AddTask = "Add Task";
+  static const String TaskRemind = "Task Remind:";
   static const String EditTask = "Edit Task";
   static const String Plan = "Plan";
   static const String Repeat = "Repeat";
-  static const String Remind = "Set Reminder";
+  static const String SetRemind = "Set Reminder";
+  static const String Remind = "Remind";
   static const String RemindAt = "Remind at";
   static const String Done = "Done";
   static const String Everyday = "Everyday";

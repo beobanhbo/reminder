@@ -153,17 +153,20 @@ class DayOfWeekHiveAdapter extends TypeAdapter<DayOfWeekHive> {
     return DayOfWeekHive(
       dayName: fields[0] as String,
       isSelected: fields[1] as bool,
+      index: fields[2] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, DayOfWeekHive obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.dayName)
       ..writeByte(1)
-      ..write(obj.isSelected);
+      ..write(obj.isSelected)
+      ..writeByte(2)
+      ..write(obj.index);
   }
 
   @override

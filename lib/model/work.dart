@@ -60,12 +60,13 @@ class Week {
 class DayOfWeek {
   final String dayName;
   bool isSelected;
-
-  DayOfWeek({this.dayName, this.isSelected});
+  final int index;
+  DayOfWeek({this.dayName, this.isSelected, this.index});
   DayOfWeekHive toHive() {
     return DayOfWeekHive(
       dayName: dayName ?? "",
       isSelected: isSelected ?? false,
+      index: index ?? 0,
     );
   }
 }
