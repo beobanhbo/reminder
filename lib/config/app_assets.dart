@@ -7,6 +7,8 @@ class AppAssets {
   static const String ic_delete_group = 'assets/images/ic_delete_group.svg';
   static const String ic_edit = 'assets/images/ic_edit.svg';
   static const String ic_check = 'assets/images/ic_check.svg';
+  static const String icSuccessfully = 'assets/images/ic_successfully.svg';
+  static const String icError = 'assets/images/ic_error.svg';
 }
 
 class AppImages {

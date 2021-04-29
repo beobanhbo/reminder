@@ -4,6 +4,7 @@ import 'package:reminder/common/app_manager.dart';
 import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/common/custom_app_bar/custom_app_bar.dart';
 import 'package:reminder/common/expand_widget/expand_reminder_widget.dart';
+import 'package:reminder/common/flushbar/custom_flushbar.dart';
 import 'package:reminder/common/task_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
@@ -132,7 +133,15 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          _onCreateWork();
+                          if (_work.remindAtTime == null)
+                            CustomFlushBar(
+                                    title: AppStrings.Alert,
+                                    message: AppStrings.MissingRemind,
+                                    context: context,
+                                    alertType: AlertType.error)
+                                .showFlushBar();
+                          else
+                            _onCreateWork();
 
                           if (_formKey.currentState.validate()) {}
                         },
