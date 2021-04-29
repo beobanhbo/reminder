@@ -88,3 +88,13 @@ class WorkBlock {
     );
   }
 }
+
+class SavedPendingNotificationID {
+  final Map<int, List<int>> mapPendingID;
+
+  SavedPendingNotificationID({this.mapPendingID});
+  SavedPendingNotificationIDHive toHive() {
+    return SavedPendingNotificationIDHive(
+        mapPendingID: this.mapPendingID ?? {});
+  }
+}

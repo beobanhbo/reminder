@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/model/work_hive.dart';
+import 'package:reminder/config/push_notification.dart';
 
 class AppUtils {
   static BoxDecoration gradientBoxDecoration() {
@@ -17,26 +17,20 @@ class AppUtils {
             end: Alignment.bottomRight));
   }
 
-  static BoxDecoration boxDecorationCornerLeft() {
-    return BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)));
-  }
-
-  static BoxDecoration boxDecorationCornerRight() {
-    return BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
-            topRight: Radius.circular(10), bottomRight: Radius.circular(10)));
-  }
-
   static Future<void> openBox({int i = 0}) async {
     if (i > 3) return;
     try {
-      await Future.wait([Hive.openBox<WorkBlockHive>('workBlocHive')]);
+      await Future.wait([
+        Hive.openBox<WorkBlockHive>('workBlocHive'),
+        Hive.openBox<SavedPendingNotificationIDHive>(
+            'SavedPendingNotificationIDHive')
+      ]);
     } catch (e) {
-      await Future.wait([Hive.deleteBoxFromDisk('workBlocHive')]);
+      await Future.wait([
+        Hive.deleteBoxFromDisk('workBlocHive'),
+        Hive.openBox<SavedPendingNotificationIDHive>(
+            'SavedPendingNotificationIDHive')
+      ]);
       return await openBox(i: ++i);
     }
   }
@@ -66,6 +60,64 @@ class AppUtils {
     return list;
   }
 
+  static int generateWorkID(int workID, int index) {
+    String id = '$workID$index';
+    return int.parse(id);
+  }
+
+  static void saveNotificationID(int workID, int notificationID) async {
+    final savedNotification = Hive.box<SavedPendingNotificationIDHive>(
+        'SavedPendingNotificationIDHive');
+    if (savedNotification.isNotEmpty) {
+      SavedPendingNotificationIDHive savedPending = savedNotification.getAt(0);
+      // savedPending.mapPendingID[workID].add(notificationID);
+      savedPending.addNotification(workID, notificationID);
+      savedPending.save();
+    }
+  }
+
+  static void turnOffPendingNotificationByID(int workID, int notificationID) {
+    final savedNotification = Hive.box<SavedPendingNotificationIDHive>(
+        'SavedPendingNotificationIDHive');
+    if (savedNotification.isNotEmpty) {
+      SavedPendingNotificationIDHive savedPending = savedNotification.getAt(0);
+      if (savedPending?.mapPendingID[workID] != null &&
+          savedPending.mapPendingID[workID].isNotEmpty) {
+        if (workID == notificationID) {
+          savedPending.mapPendingID.remove(workID);
+          turnOffNotification(workID);
+          savedPending.save();
+        } else {
+          final id = savedPending.mapPendingID[workID].firstWhere(
+              (element) => element != notificationID,
+              orElse: () => null);
+          if (id != null) {
+            savedPending.mapPendingID[workID].remove(id);
+            if (savedPending.mapPendingID[workID].isEmpty)
+              savedPending.mapPendingID.remove(workID);
+            turnOffNotification(id);
+            savedPending.save();
+          }
+        }
+      }
+    }
+  }
+
+  static void turnOffAllPendingNotification() {
+    turnOffAllNotification();
+
+    final savedNotification = Hive.box<SavedPendingNotificationIDHive>(
+        'SavedPendingNotificationIDHive');
+    if (savedNotification.isNotEmpty) {
+      SavedPendingNotificationIDHive savedPending = savedNotification.getAt(0);
+      if (savedPending?.mapPendingID != null &&
+          savedPending.mapPendingID.isNotEmpty) {
+        savedPending.mapPendingID.clear();
+        savedPending.save();
+      }
+    }
+  }
+
   static List<String> getListDaysOfWeek() {
     final List<String> listDays =
         DateFormat.EEEE(Platform.localeName).dateSymbols.SHORTWEEKDAYS;
@@ -87,7 +139,6 @@ class AppUtils {
       } else
         lsString.remove(element.dayName);
     });
-
     return lsString;
   }
 

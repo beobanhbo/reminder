@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/config/app_strings.dart';
 import 'package:reminder/model/work.dart';
 import 'package:rxdart/rxdart.dart';
@@ -45,7 +46,8 @@ void requestIOSPermission(FlutterLocalNotificationsPlugin plugin) async {
 
 Future<void> scheduleNotification(FlutterLocalNotificationsPlugin plugin,
     DateTime dateTime, NotificationClass notificationClass,
-    {List<DayOfWeek> listDayOfWeek}) async {
+    {ScreenType screenType = ScreenType.ADD_WORK,
+    List<DayOfWeek> listDayOfWeek}) async {
   AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
     notificationClass.id.toString(),
@@ -62,9 +64,11 @@ Future<void> scheduleNotification(FlutterLocalNotificationsPlugin plugin,
       if (item.isSelected) {
         final day = _nextInstanceOfDayAndTime(
             dateTime.hour, dateTime.minute, item.index);
-
+        final id = AppUtils.generateWorkID(notificationClass.id, item.index);
+        if (screenType == ScreenType.EDIT_WORK)
+          AppUtils.turnOffPendingNotificationByID(notificationClass.id, id);
         await plugin.zonedSchedule(
-          notificationClass.id + Random().nextInt(100),
+          id,
           notificationClass.title,
           day.toString(),
           day,
@@ -74,9 +78,13 @@ Future<void> scheduleNotification(FlutterLocalNotificationsPlugin plugin,
               UILocalNotificationDateInterpretation.absoluteTime,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
         );
+        AppUtils.saveNotificationID(notificationClass.id, id);
       }
     }
-  } else
+  } else {
+    if (screenType == ScreenType.EDIT_WORK)
+      AppUtils.turnOffPendingNotificationByID(
+          notificationClass.id, notificationClass.id);
     await plugin.zonedSchedule(
         notificationClass.id,
         notificationClass.title,
@@ -86,6 +94,11 @@ Future<void> scheduleNotification(FlutterLocalNotificationsPlugin plugin,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);
+
+    AppUtils.saveNotificationID(notificationClass.id, notificationClass.id);
+  }
+  var d = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  print('d');
 }
 
 TZDateTime _nextInstanceOfSpecifiedTime(int hour, int minute) {
@@ -106,9 +119,12 @@ TZDateTime _nextInstanceOfDayAndTime(int hour, int minute, int dayIndex) {
   return scheduleDay;
 }
 
-Future turnOffNotification(
-    FlutterLocalNotificationsPlugin plugin, int id) async {
-  await plugin.cancel(id);
+Future turnOffNotification(int id) async {
+  await flutterLocalNotificationsPlugin.cancel(id);
+}
+
+Future turnOffAllNotification() async {
+  await flutterLocalNotificationsPlugin.cancelAll();
 }
 
 Future<void> configureLocalTimeZone() async {

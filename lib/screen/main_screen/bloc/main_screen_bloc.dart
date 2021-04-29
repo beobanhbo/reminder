@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:reminder/common/app_manager.dart';
 import 'package:reminder/model/work.dart';
 import 'package:reminder/model/work_hive.dart';
@@ -33,6 +30,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     try {
       await AppUtils.openBox();
       (await Hive.openBox<WorkBlockHive>('workBlocHive')).add(WorkBlockHive());
+      (await Hive.openBox<SavedPendingNotificationIDHive>(
+              'SavedPendingNotificationIDHive'))
+          .add(SavedPendingNotificationIDHive());
 
       WorkBlockHive workBlockHive =
           Hive.box<WorkBlockHive>('workBlocHive').getAt(0);
@@ -47,6 +47,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
                   dayName: entries, isSelected: false, index: index++))
               .toList());
       AppManager.shared.week = week;
+      // AppUtils.turnOffAllPendingNotification();
       yield FetchDataSuccess(workBlockHive: workBlockHive);
     } catch (e) {}
   }
@@ -80,7 +81,18 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     final workBox = Hive.box<WorkBlockHive>('workBlocHive');
     if (workBox.isNotEmpty) {
       WorkBlockHive workBlockHive = workBox.getAt(0);
-      workBlockHive.deleteWork(event.workID);
+      workBlockHive.deleteWork(event.work.id);
+
+      event.work.week.listDay.forEach(
+        (element) {
+          if (element.isSelected) {
+            AppUtils.turnOffPendingNotificationByID(
+                int.parse(event.work.id),
+                AppUtils.generateWorkID(
+                    int.parse(event.work.id), element.index));
+          }
+        },
+      );
       workBlockHive.save();
 
       yield FetchDataSuccess(workBlockHive: workBlockHive);

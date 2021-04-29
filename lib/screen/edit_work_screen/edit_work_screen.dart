@@ -291,11 +291,6 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
   }
 
   _onCreateWork() async {
-    // scheduleNotification(localNotificationsPlugin, 1, "Remind", "Payload",
-    //     DateTime.now().add(Duration(seconds: 2)));
-    // // turnOffNotificationByID(localNotificationsPlugin, 0);
-    // scheduleNotificationPeriodicallyShow(localNotificationsPlugin, 0, "Remind",
-    //     "Payload", RepeatInterval.EveryMinute);
     String timestamp = DateTime.now().microsecondsSinceEpoch.toString();
     Map<String, Work> subTaskMap = {};
     List<String> listID = [];
@@ -308,7 +303,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
         remindAtTime: _work.remindAtTime,
         enableReminder: _work.enableReminder,
         isRepeat: _work.isRepeat,
-        id: _work?.id != null ? _work.id : timestamp.substring(7),
+        id: _work?.id != null ? _work.id : timestamp.substring(10),
         createAt: timestamp,
         week: Week(listDay: _listDayOfWeek));
     if (work.enableReminder) {
@@ -321,18 +316,21 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
               title: AppStrings.Remind,
               body: work.title,
               payload: work.title),
+          screenType: widget.mainArgs.screenType,
           listDayOfWeek: work.week.listDay,
         );
-      } else
+      } else {
         await scheduleNotification(
-          flutterLocalNotificationsPlugin,
-          work.remindAtTime,
-          NotificationClass(
-              id: int.parse(work.id),
-              title: AppStrings.Remind,
-              body: work.title,
-              payload: work.title),
-        );
+            flutterLocalNotificationsPlugin,
+            work.remindAtTime,
+            NotificationClass(
+                id: int.parse(work.id),
+                title: AppStrings.Remind,
+                body: work.title,
+                payload: work.title),
+            screenType: widget.mainArgs.screenType,
+            listDayOfWeek: null);
+      }
     }
 
     widget.mainArgs.screenType == ScreenType.EDIT_WORK

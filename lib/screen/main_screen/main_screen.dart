@@ -223,6 +223,6 @@ class _MainScreenState extends State<MainScreen> {
   void _onCancel() {}
 
   void _onTapDelete(Work work) {
-    _mainScreenBloc.add(DeleteWorkEvent(work.id));
+    _mainScreenBloc.add(DeleteWorkEvent(work));
   }
 }

@@ -133,3 +133,26 @@ class WeekHive extends HiveObject {
     );
   }
 }
+
+@HiveType(typeId: 5)
+class SavedPendingNotificationIDHive extends HiveObject {
+  @HiveField(0)
+  Map<int, List<int>> mapPendingID;
+
+  SavedPendingNotificationIDHive({this.mapPendingID}) {
+    this.mapPendingID ??= {};
+  }
+  SavedPendingNotificationID toOrigin() {
+    return SavedPendingNotificationID(mapPendingID: this.mapPendingID ?? {});
+  }
+
+  void addNotification(int workID, int notificationID) {
+    if (mapPendingID[workID] == null) {
+      mapPendingID[workID] = [];
+      mapPendingID[workID].add(notificationID);
+    } else {
+      if (!mapPendingID[workID].contains(notificationID))
+        mapPendingID[workID].add(notificationID);
+    }
+  }
+}

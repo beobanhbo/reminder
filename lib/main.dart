@@ -23,6 +23,7 @@ void main() async {
   Hive.registerAdapter(WorkTypeHiveAdapter());
   Hive.registerAdapter(WeekHiveAdapter());
   Hive.registerAdapter(DayOfWeekHiveAdapter());
+  Hive.registerAdapter(SavedPendingNotificationIDHiveAdapter());
 
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();

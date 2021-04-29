@@ -213,3 +213,39 @@ class WeekHiveAdapter extends TypeAdapter<WeekHive> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class SavedPendingNotificationIDHiveAdapter
+    extends TypeAdapter<SavedPendingNotificationIDHive> {
+  @override
+  final int typeId = 5;
+
+  @override
+  SavedPendingNotificationIDHive read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return SavedPendingNotificationIDHive(
+      mapPendingID: (fields[0] as Map)?.map((dynamic k, dynamic v) =>
+          MapEntry(k as int, (v as List)?.cast<int>())),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, SavedPendingNotificationIDHive obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.mapPendingID);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SavedPendingNotificationIDHiveAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
