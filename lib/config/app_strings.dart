@@ -5,7 +5,7 @@ class AppStrings {
   static const String TaskRemind = "Task Remind:";
   static const String EditTask = "Edit Task";
   static const String Plan = "Plan";
-  static const String Repeat = "Repeat";
+  static const String Repeat = "Repeat on ";
   static const String SetRemind = "Set Reminder";
   static const String SetDeadline = "Set Deadline";
   static const String Deadline = "Deadline on";
@@ -13,7 +13,7 @@ class AppStrings {
   static const String MissingRemind = "Please set time to remind!";
   static const String RemindAt = "Remind begin on";
   static const String Done = "Done";
-  static const String Everyday = "Everyday";
+  static const String Everyday = "everyday";
   static const String Complete_task = "Complete this task?";
   static const String Title = "Title";
   static const String Tasks = "Tasks";

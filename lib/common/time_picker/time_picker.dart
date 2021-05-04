@@ -93,7 +93,8 @@ void showTimesPicker(BuildContext context,
                     pickerTextStyle: AppStyles.textStyleBlackNormal(21)),
               ),
               child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
+                mode: CupertinoDatePickerMode.dateAndTime,
+                minimumYear: initDateTime.year,
                 onDateTimeChanged: (DateTime value) {
                   if (onDateTimeChanged == null) return;
 

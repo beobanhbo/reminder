@@ -66,6 +66,7 @@ void showDatesPicker(BuildContext context,
               ),
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.date,
+                minimumYear: initDateTime.year,
                 onDateTimeChanged: (DateTime value) {
                   if (onDateTimeChanged == null) return;
 

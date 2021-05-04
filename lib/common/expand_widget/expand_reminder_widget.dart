@@ -43,7 +43,6 @@ class _ReminderWidgetState extends State<ReminderWidget> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     selectedDate.clear();
     super.dispose();
   }
@@ -67,7 +66,6 @@ class _ReminderWidgetState extends State<ReminderWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [_buildReminderTitle(), _buildButtonNotification()],
           ),
-          Container(child: _buildDateSelected()),
           _buildTimeRepeat(),
         ],
       ),
@@ -118,11 +116,16 @@ class _ReminderWidgetState extends State<ReminderWidget> {
           tilePadding: EdgeInsets.only(top: 0),
           initiallyExpanded: isEnableRepeat,
           trailing: _buildRepeatButton(),
-          title: Text(
-            AppStrings.Repeat,
-            style: isEnableRepeat
-                ? AppStyles.textStyleBlue(16)
-                : AppStyles.textStyleBlackNormal(16),
+          title: Row(
+            children: [
+              Text(
+                AppStrings.Repeat,
+                style: isEnableRepeat
+                    ? AppStyles.textStyleBlue(16)
+                    : AppStyles.textStyleBlackNormal(16),
+              ),
+              Container(child: _buildDateSelected()),
+            ],
           ),
           children: [
             _buildDaysOfWeek(_listDay),
@@ -189,9 +192,22 @@ class _ReminderWidgetState extends State<ReminderWidget> {
         (element) => element.isSelected == false,
         orElse: () => null);
     if (unselectedDate == null)
-      return Text(AppStrings.Everyday);
+      return Text(
+        AppStrings.Everyday,
+        style: isEnableRepeat
+            ? AppStyles.textStyleBlue(16)
+            : AppStyles.textStyleBlackNormal(16),
+      );
     else {
-      return Row(children: selectedDate.map((e) => Text(e)).toList());
+      return Row(
+          children: selectedDate
+              .map((e) => Text(
+                    e,
+                    style: isEnableRepeat
+                        ? AppStyles.textStyleBlue(16)
+                        : AppStyles.textStyleBlackNormal(16),
+                  ))
+              .toList());
     }
   }
 
