@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:reminder/common/app_utils.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_assets.dart';
 import 'package:reminder/config/app_font_styles.dart';
@@ -30,18 +31,14 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
       actionPane: SlidableDrawerActionPane(),
       key: widget.slidableKey,
       secondaryActions: [
-        if (widget.work.stage != 1)
-          IconSlideAction(
-            onTap: widget.onCheck,
-            iconWidget: AppImages.asset(
-                assetPath: AppAssets.ic_check, color: AppColors.white),
-            color: AppColors.green,
-          ),
         IconSlideAction(
-          onTap: widget.onEdit,
+          onTap: widget.onCheck,
           iconWidget: AppImages.asset(
-              assetPath: AppAssets.ic_edit, color: AppColors.white),
-          color: AppColors.orange,
+              assetPath: widget.work.stage == 0
+                  ? AppAssets.ic_check
+                  : AppAssets.ic_undo_alt_blue,
+              color: AppColors.white),
+          color: AppColors.green,
         ),
         IconSlideAction(
           onTap: widget.onDelete,
@@ -51,7 +48,9 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
         ),
       ],
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          widget.onEdit();
+        },
         child: _buildWorkItem(),
       ),
     );
@@ -61,28 +60,61 @@ class _SlideWorkItemState extends State<SlideWorkItem> {
     return Container(
       color: AppColors.white,
       padding: EdgeInsets.all(8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
         children: [
-          widget.work.stage == 0
-              ? Icon(
-                  Icons.check_circle_outline_outlined,
-                  color: AppColors.lightTextGrey,
-                )
-              : Icon(
-                  Icons.check_circle_outline_outlined,
-                  color: AppColors.green,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              widget.work.stage == 0
+                  ? Icon(
+                      Icons.radio_button_off,
+                      color: AppColors.lightTextGrey,
+                      size: 20,
+                    )
+                  : Icon(
+                      Icons.check_circle_outline_outlined,
+                      color: AppColors.green,
+                      size: 20,
+                    ),
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: Text(
+                  widget.work.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                  style: AppStyles.textStyleBlackNormal(16),
                 ),
-          SizedBox(
-            width: 8,
+              ),
+            ],
           ),
-          Text(
-            widget.work.title,
-            overflow: TextOverflow.ellipsis,
-            style: widget.work.stage == 0
-                ? AppStyles.textStyleBlackNormal(16)
-                : AppStyles.textStyleGreenNormal(16),
-          )
+          widget.work?.deadline != null
+              ? Container(
+                  margin: EdgeInsets.only(top: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Icon(
+                        Icons.calendar_today_sharp,
+                        size: 14,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        AppUtils.formatTime(
+                            widget.work?.deadline.toString(), "yMMMMd"),
+                        overflow: TextOverflow.ellipsis,
+                        style: AppStyles.textStyleBlackNormal(14),
+                      ),
+                    ],
+                  ),
+                )
+              : Container()
         ],
       ),
     );

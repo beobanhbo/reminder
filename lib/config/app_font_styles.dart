@@ -32,6 +32,7 @@ class AppStyles {
 
   static TextStyle textStyleBlue(double textSize) {
     return TextStyle(
+      fontWeight: FontWeight.normal,
       fontSize: textSize,
       color: AppColors.blue,
     );

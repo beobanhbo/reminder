@@ -1,38 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Color, Colors, GestureDetector;
-import 'package:flutter/cupertino.dart'
-    show
-        Alignment,
-        Border,
-        BorderSide,
-        BoxDecoration,
-        BuildContext,
-        Color,
-        Column,
-        Container,
-        CrossAxisAlignment,
-        CupertinoDatePicker,
-        CupertinoTextThemeData,
-        CupertinoTheme,
-        CupertinoThemeData,
-        EdgeInsets,
-        Expanded,
-        FontWeight,
-        Key,
-        MainAxisAlignment,
-        Navigator,
-        Row,
-        SizedBox,
-        Text,
-        Widget,
-        required,
-        showCupertinoModalPopup;
+import 'package:flutter/material.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
-export 'package:flutter/material.dart' show Color, Colors;
 
-void showDurationPicker(BuildContext context,
+void showDatesPicker(BuildContext context,
     {Key key,
     @required Function(DateTime value) onDateTimeChanged,
     int minuteInterval = 1,
@@ -93,11 +65,12 @@ void showDurationPicker(BuildContext context,
                     pickerTextStyle: AppStyles.textStyleBlackNormal(21)),
               ),
               child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
+                mode: CupertinoDatePickerMode.date,
                 onDateTimeChanged: (DateTime value) {
                   if (onDateTimeChanged == null) return;
 
-                  dateTime = DateTime(0000, 01, 01, value.hour, value.minute);
+                  dateTime = DateTime(value.year, value.month, value.day,
+                      value.hour, value.minute);
                 },
                 initialDateTime: initDateTime,
                 minuteInterval: minuteInterval,

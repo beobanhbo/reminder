@@ -203,20 +203,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onTapCheck(Work work) {
-    AlertUtil.showDialogAlert(
-        context: context,
-        message: AppStrings.Complete_task,
-        title: AppStrings.Alert,
-        onCancel: _onCancel,
-        onConfirm: () {
-          _onConfirm(work);
-        },
-        leftTitle: AppStrings.Confirm,
-        rightTitle: AppStrings.Cancel);
-  }
-
-  void _onConfirm(Work work) {
-    work.stage = 1;
+    if (work.stage == 0)
+      work.stage = 1;
+    else if (work.stage == 1) work.stage = 0;
     _mainScreenBloc.add(UpdateWorkEvent(work));
   }
 

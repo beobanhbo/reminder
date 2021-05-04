@@ -26,6 +26,8 @@ class WorkHive extends HiveObject {
   bool isRepeat;
   @HiveField(9)
   DateTime remindAtTime;
+  @HiveField(10)
+  DateTime deadline;
 
   WorkHive({
     this.id,
@@ -33,6 +35,7 @@ class WorkHive extends HiveObject {
     this.createAt,
     this.stage,
     this.remindAtTime,
+    this.deadline,
     this.enableReminder = false,
     this.isRepeat = false,
     this.week,
@@ -47,6 +50,7 @@ class WorkHive extends HiveObject {
       createAt: createAt ?? "",
       stage: stage ?? 0,
       remindAtTime: remindAtTime ?? DateTime(1969, 1, 20, 7, 0, 0),
+      deadline: deadline ?? null,
       enableReminder: enableReminder ?? false,
       isRepeat: isRepeat ?? false,
       week: week != null ? week.toOrigin() : [],

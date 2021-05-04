@@ -142,10 +142,16 @@ class AppUtils {
     return lsString;
   }
 
-  static String convertFormatDateTime(DateTime dateTime) {
+  static String convertFormatToTime(DateTime dateTime) {
     String hhmma = DateFormat.jm().format(dateTime);
 
     return hhmma;
+  }
+
+  static String convertFormatToDate(DateTime dateTime) {
+    String yMMMMd = DateFormat.yMMMMd().format(dateTime);
+
+    return yMMMMd;
   }
 
   static bool isNewDay(DateTime latestDate, DateTime currentDate) {

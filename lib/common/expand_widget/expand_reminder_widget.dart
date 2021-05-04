@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:reminder/common/app_manager.dart';
 import 'package:reminder/common/app_utils.dart';
-import 'package:reminder/common/time_picker/duration_picker.dart';
+import 'package:reminder/common/time_picker/date_picker.dart';
+import 'package:reminder/common/time_picker/time_picker.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_font_styles.dart';
 import 'package:reminder/config/app_strings.dart';
@@ -18,8 +20,8 @@ class ReminderWidget extends StatefulWidget {
 
 class _ReminderWidgetState extends State<ReminderWidget> {
   Work _work;
-  DateTime _dateTime;
-  bool isEnableNotification, isEnableRepeat;
+  DateTime _dateTime, _deadline;
+  bool isEnableNotification, isEnableRepeat, isEnableDeadline;
   List<DayOfWeek> _listDay = [];
   List<String> selectedDate = [];
   @override
@@ -27,12 +29,14 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     _work = widget.work;
     isEnableNotification = _work?.enableReminder ?? false;
     isEnableRepeat = _work?.isRepeat ?? false;
+    isEnableDeadline = _work?.deadline != null ? true : false;
     _listDay = _work?.week != null
         ? _work.week.listDay
         : AppManager.shared.week.listDay;
-    getChoosedDay(_listDay);
+    getChosenDay(_listDay);
 
     _dateTime = _work?.remindAtTime;
+    _deadline = _work?.deadline;
 
     super.initState();
   }
@@ -46,7 +50,12 @@ class _ReminderWidgetState extends State<ReminderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildHeaderReminder();
+    return Column(
+      children: [
+        _buildDeadLine(),
+        _buildHeaderReminder(),
+      ],
+    );
   }
 
   Widget _buildHeaderReminder() {
@@ -72,7 +81,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
         },
         child: _dateTime != null
             ? Text(
-                '${AppStrings.RemindAt} ${AppUtils.convertFormatDateTime(_dateTime)}',
+                '${AppStrings.RemindAt} ${AppUtils.convertFormatToDate(_dateTime)} - ${AppUtils.convertFormatToTime(_dateTime)}',
                 style: isEnableNotification
                     ? AppStyles.textStyleBlue(16)
                     : AppStyles.textStyleBlackNormal(16))
@@ -85,10 +94,15 @@ class _ReminderWidgetState extends State<ReminderWidget> {
   Widget _buildButtonNotification() {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isEnableNotification = !isEnableNotification;
-          if (_work != null) _work.enableReminder = isEnableNotification;
-        });
+        if (_dateTime == null) {
+          _onTimePicker();
+          isEnableNotification = true;
+        } else {
+          setState(() {
+            isEnableNotification = !isEnableNotification;
+            if (_work != null) _work.enableReminder = isEnableNotification;
+          });
+        }
       },
       child: Icon(
         Icons.notifications,
@@ -101,6 +115,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     return Column(
       children: [
         ExpansionTile(
+          tilePadding: EdgeInsets.only(top: 0),
           initiallyExpanded: isEnableRepeat,
           trailing: _buildRepeatButton(),
           title: Text(
@@ -146,7 +161,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
       onTap: () {
         setState(() {
           dayOfWeek.isSelected = !dayOfWeek.isSelected;
-          getChoosedDay(_listDay);
+          getChosenDay(_listDay);
         });
       },
       child: Container(
@@ -184,7 +199,7 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     DateTime now;
     _dateTime != null ? now = _dateTime : now = DateTime.now();
 
-    showDurationPicker(context,
+    showTimesPicker(context,
         initDateTime: _work?.remindAtTime == null ? now : _work?.remindAtTime,
         onDateTimeChanged: (time) {
       _dateTime = time == null ? now : time;
@@ -193,7 +208,68 @@ class _ReminderWidgetState extends State<ReminderWidget> {
     });
   }
 
-  void getChoosedDay(List<DayOfWeek> listDay) {
+  void _onDatePicker() {
+    DateTime now;
+    _deadline != null ? now = _deadline : now = DateTime.now();
+
+    showDatesPicker(context,
+        initDateTime: _work?.deadline == null ? now : _work?.deadline,
+        onDateTimeChanged: (time) {
+      _deadline = time == null ? now : time;
+      _work?.deadline = _deadline;
+      isEnableDeadline = true;
+      setState(() {});
+    });
+  }
+
+  void getChosenDay(List<DayOfWeek> listDay) {
     selectedDate = AppUtils.getChoosedDayName(listDay);
+  }
+
+  Widget _buildDeadLine() {
+    return GestureDetector(
+        onTap: () {
+          _onDatePicker();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: _deadline != null
+                  ? Text(
+                      '${AppStrings.Deadline} ${AppUtils.convertFormatToDate(_deadline)}',
+                      style: isEnableDeadline
+                          ? AppStyles.textStyleBlue(16)
+                          : AppStyles.textStyleBlackNormal(16))
+                  : Text(
+                      AppStrings.SetDeadline,
+                      style: AppStyles.textStyleBlackNormal(16),
+                    ),
+            ),
+            _buildButtonClear(),
+          ],
+        ));
+  }
+
+  Widget _buildButtonClear() {
+    return GestureDetector(
+      onTap: () {
+        if (_deadline == null)
+          _onDatePicker();
+        else {
+          setState(() {
+            isEnableDeadline = !isEnableDeadline;
+            if (_work != null) {
+              _work.deadline = null;
+              _deadline = null;
+            }
+          });
+        }
+      },
+      child: Icon(
+        isEnableDeadline ? Icons.close : Icons.today,
+        color: isEnableDeadline ? AppColors.blue : AppColors.grey73,
+      ),
+    );
   }
 }

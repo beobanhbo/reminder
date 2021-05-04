@@ -4,6 +4,7 @@ class Work {
   final String id, title, createAt;
   int stage;
   DateTime remindAtTime;
+  DateTime deadline;
   bool enableReminder, isRepeat;
   WorkTypeHive workType;
   Map<String, Work> workChildMap;
@@ -13,6 +14,7 @@ class Work {
     this.title,
     this.createAt,
     this.remindAtTime,
+    this.deadline,
     this.stage,
     this.enableReminder = false,
     this.isRepeat = false,
@@ -27,6 +29,7 @@ class Work {
       createAt: createAt ?? "",
       stage: stage ?? 0,
       remindAtTime: remindAtTime ?? DateTime(1969, 1, 20, 7, 0, 0),
+      deadline: deadline ?? null,
       enableReminder: enableReminder ?? false,
       isRepeat: isRepeat ?? false,
       week: week != null ? week.toHive() : [],

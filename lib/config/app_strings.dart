@@ -7,19 +7,21 @@ class AppStrings {
   static const String Plan = "Plan";
   static const String Repeat = "Repeat";
   static const String SetRemind = "Set Reminder";
+  static const String SetDeadline = "Set Deadline";
+  static const String Deadline = "Deadline on";
   static const String Remind = "Remind";
   static const String MissingRemind = "Please set time to remind!";
-  static const String RemindAt = "Remind at";
+  static const String RemindAt = "Remind begin on";
   static const String Done = "Done";
   static const String Everyday = "Everyday";
   static const String Complete_task = "Complete this task?";
   static const String Title = "Title";
-  static const String Options = "Options";
+  static const String Tasks = "Tasks";
   static const String Remove = "Remove";
   static const String Confirm = "Confirm";
   static const String Alert = "Alert";
   static const String Cancel = "Cancel";
-  static const String Option = "Option";
+  static const String Task = "Task";
   static const String TapToAdd = "Tap to add more";
   static const String Not_empty = "Not empty";
 }

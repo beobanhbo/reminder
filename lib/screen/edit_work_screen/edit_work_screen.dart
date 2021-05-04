@@ -111,7 +111,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                                   contentPadding:
                                       EdgeInsets.fromLTRB(10, 16, 10, 0),
                                   border: UnderlineInputBorder(),
-                                  labelText: AppStrings.Title,
+                                  hintText: AppStrings.Title,
                                   labelStyle: AppStyles.textStyleBlackBold(16)),
                               controller: _titleTextController,
                               validator: (String value) {
@@ -196,7 +196,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppStrings.Options.toUpperCase(),
+          AppStrings.Tasks.toUpperCase(),
           style: AppStyles.textStyleBlackBold(16),
         ),
         Row(
@@ -225,8 +225,8 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
                       borderSide:
                           const BorderSide(color: Colors.white, width: 2.0),
                     ),
-                    hintText: AppStrings.Option,
-                    labelText: AppStrings.Option),
+                    hintText: AppStrings.Task,
+                    labelText: AppStrings.Task),
                 controller: _taskTextController,
                 maxLines: 2,
                 minLines: 1,
@@ -314,6 +314,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
         isRepeat: _work.isRepeat,
         id: _work?.id != null ? _work.id : timestamp.substring(10),
         createAt: timestamp,
+        deadline: _work.deadline,
         week: Week(listDay: _listDayOfWeek));
     if (work.enableReminder) {
       if (work.isRepeat) {

@@ -9,6 +9,7 @@ class AppAssets {
   static const String ic_check = 'assets/images/ic_check.svg';
   static const String icSuccessfully = 'assets/images/ic_successfully.svg';
   static const String icError = 'assets/images/ic_error.svg';
+  static const String ic_undo_alt_blue = 'assets/images/ic_undo_alt_blue.svg';
 }
 
 class AppImages {
