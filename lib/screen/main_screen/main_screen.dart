@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:reminder/common/ActionButton.dart';
 import 'package:reminder/common/alert_dialog/alert_util.dart';
 import 'package:reminder/common/app_utils.dart';
+import 'package:reminder/common/icon_button.dart';
 import 'package:reminder/common/slidable/slideable_work_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_assets.dart';
@@ -27,6 +29,7 @@ class _MainScreenState extends State<MainScreen> {
   MainScreenBloc _mainScreenBloc;
   List<Work> _listWork = [];
   final SlidableController slidableController = SlidableController();
+  List<String> list = ["Cafe", "Veg", "Clothe"];
 
   @override
   void initState() {
@@ -53,6 +56,49 @@ class _MainScreenState extends State<MainScreen> {
             decoration: AppUtils.gradientBoxDecoration(),
             child: Column(
               children: [
+                ActionButton(
+                  onTap: () {
+                    _onTap("Them");
+                  },
+                  title: "Them",
+                  titleColor: AppColors.black,
+                  borderColor: AppColors.black,
+                ),
+                CustomIconButton(
+                  onTap: () {
+                    _onTap("decrease");
+                  },
+                  iconPath: AppAssets.ic_edit,
+                  borderColor: AppColors.red,
+                ),
+                CustomIconButton(
+                  onTap: () {
+                    _onTap("tim");
+                  },
+                  iconPath: AppAssets.icError,
+                ),
+                Container(
+                  height: 44,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) {
+                      return Divider(
+                        indent: 10,
+                      );
+                    },
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => ActionButton(
+                      onTap: () {
+                        _onTap(list[index]);
+                      },
+                      title: list[index],
+                      iconPath: AppAssets.ic_check,
+                      backgroundColor: AppColors.red,
+                      titleColor: AppColors.white,
+                    ),
+                    itemCount: list.length,
+                  ),
+                ),
                 _buildCategory(),
                 _buildListWork(),
               ],
@@ -224,5 +270,9 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onTapDelete(Work work) {
     _mainScreenBloc.add(DeleteWorkEvent(work));
+  }
+
+  void _onTap(String title) {
+    print(title);
   }
 }
