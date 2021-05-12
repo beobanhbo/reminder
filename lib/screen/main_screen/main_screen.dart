@@ -5,7 +5,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:reminder/common/ActionButton.dart';
 import 'package:reminder/common/alert_dialog/alert_util.dart';
 import 'package:reminder/common/app_utils.dart';
-import 'package:reminder/common/icon_button.dart';
 import 'package:reminder/common/slidable/slideable_work_item.dart';
 import 'package:reminder/config/AppColors.dart';
 import 'package:reminder/config/app_assets.dart';
@@ -16,6 +15,7 @@ import 'package:reminder/model/work.dart';
 import 'package:reminder/screen/edit_work_screen/edit_work_screen.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_event.dart';
 import 'package:reminder/screen/main_screen/bloc/main_screen_state.dart';
+import 'package:reminder/screen/main_screen/dropdown_screen.dart';
 
 import '../../config/AppColors.dart';
 import 'bloc/main_screen_bloc.dart';
@@ -28,13 +28,34 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   MainScreenBloc _mainScreenBloc;
   List<Work> _listWork = [];
+  bool hide = false;
+  String path;
   final SlidableController slidableController = SlidableController();
-  List<String> list = ["Cafe", "Veg", "Clothe"];
-
+  List<mod> list = [
+    mod("Cafe1", 0, 1000),
+    mod("Cafe2", 0, 2000),
+    mod("Cafe3", 0, 3000),
+    mod("Cafe4", 0, 4000),
+    mod("Cafe5", 0, 5000),
+    mod("Cafe6", 0, 6000),
+    mod("Cafe7", 0, 7000),
+    mod("Cafe8", 0, 8000),
+    mod("Cafe9", 0, 9000),
+    mod("Cafe10", 0, 10000),
+  ];
+  List<Recommend> listRe = [
+    Recommend(title: "CHon cach hien thi", iconPath: AppAssets.icSuccessfully),
+    Recommend(title: "Grid", iconPath: AppAssets.plan),
+    Recommend(title: "List", iconPath: AppAssets.icError),
+    Recommend(title: "More", iconPath: AppAssets.ic_edit),
+    Recommend(title: "More 2", iconPath: AppAssets.ic_delete_group),
+  ];
+  Map<String, mod> mapCount = {};
   @override
   void initState() {
     _mainScreenBloc = BlocProvider.of<MainScreenBloc>(context);
     _mainScreenBloc.add(FetchDataEvent());
+    path = AppAssets.ic_check;
     super.initState();
   }
 
@@ -46,64 +67,132 @@ class _MainScreenState extends State<MainScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            _onOpenEditScreen(
-                mainArgs: MainArgs(screenType: ScreenType.ADD_WORK));
+            hide = !hide;
+            setState(() {});
+//            _onOpenEditScreen(
+//                mainArgs: MainArgs(screenType: ScreenType.ADD_WORK));
           },
         ),
         body: SafeArea(
           child: Container(
             padding: EdgeInsets.all(8),
             decoration: AppUtils.gradientBoxDecoration(),
-            child: Column(
-              children: [
-                ActionButton(
-                  onTap: () {
-                    _onTap("Them");
-                  },
-                  title: "Them",
-                  titleColor: AppColors.black,
-                  borderColor: AppColors.black,
-                ),
-                CustomIconButton(
-                  onTap: () {
-                    _onTap("decrease");
-                  },
-                  iconPath: AppAssets.ic_edit,
-                  borderColor: AppColors.red,
-                ),
-                CustomIconButton(
-                  onTap: () {
-                    _onTap("tim");
-                  },
-                  iconPath: AppAssets.icError,
-                ),
-                Container(
-                  height: 44,
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        indent: 10,
-                      );
-                    },
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ActionButton(
-                      onTap: () {
-                        _onTap(list[index]);
-                      },
-                      title: list[index],
-                      iconPath: AppAssets.ic_check,
-                      backgroundColor: AppColors.red,
-                      titleColor: AppColors.white,
-                    ),
-                    itemCount: list.length,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          color: AppColors.white,
+                          child: _buildDropDown(_onTapDown),
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        color: AppColors.white,
+                        child: _buildDropDown(_onTapDown),
+                      ),
+                    ],
                   ),
-                ),
-                _buildCategory(),
-                _buildListWork(),
-              ],
+                  PopupMenuButton(
+                    initialValue: 2,
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(48),
+                        color: AppColors.red,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppImages.asset(assetPath: path),
+                          Icon(Icons.arrow_downward)
+                        ],
+                      ),
+                    ),
+                    offset: const Offset(0, kToolbarHeight),
+                    onSelected: (int value) {
+                      path = AppAssets.ic_edit;
+                      setState(() {});
+                    },
+                    itemBuilder: (context) {
+                      return List.generate(5, (index) {
+                        return PopupMenuItem(
+                          value: index,
+                          child: Text('button no $index'),
+                        );
+                      });
+                    },
+                  ),
+                  Container(
+                    color: AppColors.green,
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
+                      separatorBuilder: (context, index) {
+                        return Divider(
+                          indent: 10,
+                        );
+                      },
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => ActionButton(
+                        onTap: () {
+                          _onTap(list[index]);
+                        },
+                        title: "${list[index].title} ${list[index].number}",
+                        iconPath: AppAssets.ic_check,
+                        backgroundColor: AppColors.red,
+                        titleColor: AppColors.white,
+                      ),
+                      itemCount: list.length,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  _onTapDown() {
+    showDialog(
+        context: context,
+        builder: (context) => DropDownScreen(
+              list: listRe,
+              onTap: _onTapDrop,
+            ));
+  }
+
+  _onTapDrop(Recommend recommend) {
+    setState(() {
+      path = recommend.iconPath;
+    });
+  }
+
+  Widget _buildDropDown(Function onTap) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+      },
+      child: Container(
+        height: 50,
+        margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(48),
+          color: AppColors.red,
+        ),
+        child: Row(
+          children: [
+            AppImages.asset(assetPath: path),
+            SizedBox(width: 10,),
+            Icon(Icons.arrow_downward)
+          ],
         ),
       ),
     );
@@ -142,10 +231,11 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildButtonCategory(String title, String path) {
     return GestureDetector(
       child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40), color: AppColors.grey73),
         padding: EdgeInsets.all(8),
-        child: Column(
+        child: Row(
           children: [
-            AppImages.asset(assetPath: path, height: 40, width: 40),
             Text(
               title,
               style: AppStyles.textStyleBlackNormal(16),
@@ -272,7 +362,25 @@ class _MainScreenState extends State<MainScreen> {
     _mainScreenBloc.add(DeleteWorkEvent(work));
   }
 
-  void _onTap(String title) {
-    print(title);
+  void _onTap(mod mods) {
+    int index = list.indexWhere((element) => element.title == mods.title);
+    list[index].number = mods.number + 1;
+    setState(() {});
   }
+
+  void countAddToCart(mod modss) {
+    if (mapCount[modss.title] == null) {
+      mapCount['${modss.title}'] = modss;
+    } else {
+      mapCount['${modss.title}'].number = mapCount['${modss.title}'].number + 1;
+    }
+  }
+}
+
+class mod {
+  String title;
+  int number;
+  int price;
+
+  mod(this.title, this.number, this.price);
 }
